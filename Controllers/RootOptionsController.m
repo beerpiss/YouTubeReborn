@@ -297,7 +297,6 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
             [self presentViewController:downloadsControllerView animated:YES completion:nil];
         }
         if (indexPath.row == 1 || indexPath.row == 2) {
-            NSFileManager* fm = [[NSFileManager alloc] init];
             NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
             NSString* documentsDirectory = [paths objectAtIndex:0];
             BOOL canOpenInFiles = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"UISupportsDocumentBrowser"];

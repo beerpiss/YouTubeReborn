@@ -14,7 +14,7 @@
 
 @synthesize languageIdentifier = _languageIdentifier;
 
-static NSString * _innertubeApiKey = @"AIzaSyCGZHGUPP9wojQDfrwPEr7Pr-mhBanHAb8";
+static NSString * _innertubeApiKey = @"AIzaSyB-63vPrdThhKuerbB2N_l7Kwwcxj6yUAc";
 
 + (instancetype) defaultClient
 {

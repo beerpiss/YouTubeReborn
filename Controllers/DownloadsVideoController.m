@@ -92,9 +92,7 @@ NSMutableArray* filePathsVideoArtworkArray;
     playerViewController.player = [AVPlayer playerWithURL:[NSURL fileURLWithPath:filePath]];
     playerViewController.allowsPictureInPicturePlayback = YES;
     if (@available(iOS 14.2, *)) {
-        if ([playerViewController respondsToSelector:@selector(setCanStartPictureInPictureAutomaticallyFromInline:)]) {
-            playerViewController.canStartPictureInPictureAutomaticallyFromInline = NO;
-        }
+        playerViewController.canStartPictureInPictureAutomaticallyFromInline = NO;
     }
     [playerViewController.player play];
 

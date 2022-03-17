@@ -4,6 +4,7 @@
 #import <MediaRemote/MediaRemote.h>
 #import <UIKit/UIKit.h>
 #import <XCDYouTubeKit/XCDYouTubeKit.h>
+#import <dlfcn.h>
 #import "Controllers/RootOptionsController.h"
 #import "DTTJailbreakDetection/DTTJailbreakDetection.h"
 #import "Tweak.h"
@@ -300,8 +301,6 @@ NSMutableArray* overlayButtons = [NSMutableArray array];
         MRMediaRemoteSendCommand(MRMediaRemoteCommandPause, 0);
     }
 
-    XCDYouTubeClient.innertubeApiKey = YTApiKey;
-
     NSString* videoIdentifier = [playingVideoID currentVideoID];
 
     [[XCDYouTubeClient defaultClient]
@@ -428,8 +427,6 @@ NSMutableArray* overlayButtons = [NSMutableArray array];
     if (videoStatus == 3) {
         MRMediaRemoteSendCommand(MRMediaRemoteCommandPause, 0);
     }
-
-    XCDYouTubeClient.innertubeApiKey = YTApiKey;
 
     NSString* videoIdentifier = [playingVideoID currentVideoID];
 
@@ -606,8 +603,6 @@ NSMutableArray* overlayButtons = [NSMutableArray array];
     if (videoStatus == 3) {
         MRMediaRemoteSendCommand(MRMediaRemoteCommandPause, 0);
     }
-
-    XCDYouTubeClient.innertubeApiKey = YTApiKey;
 
     NSString* videoIdentifier = [playingVideoID currentVideoID];
 
@@ -1908,150 +1903,172 @@ int selectedTabIndex = 0;
 
 %ctor {
     @autoreleasepool {
-        [[NSUserDefaults standardUserDefaults] registerDefaults:@{
-            @"kEnableNoVideoAds" : @YES,
-            @"kEnableBackgroundPlaybacck" : @NO,
-            @"kNoDownloadButton" : @NO,
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        [defaults registerDefaults:@{
+            // General options
+            @"kEnableiPadStyleOniPhone" : @NO,
+            @"kUnlockUHDQuality" : @NO,
             @"kNoCastButton" : @NO,
             @"kNoNotificationButton" : @NO,
-            @"kAllowHDOnCellularData" : @NO,
-            @"kDisableVideoEndscreenPopups" : @NO,
+            @"kNoSearchButton" : @NO,
             @"kDisableYouTubeKidsPopup" : @NO,
-            @"kDisableVoiceSearch" : @NO,
             @"kDisableHints" : @NO,
+            @"kHideYouTubeLogo" : @NO,
+            @"kUseNativeShareSheet" : @NO,
+            // Video options
+            @"kEnableNoVideoAds" : @YES,
+            @"kEnableBackgroundPlaybacck" : @NO,
+            @"kAllowHDOnCellularData" : @NO,
+            @"kAutoFullScreen" : @NO,
+            @"kDisableVideoEndscreenPopups" : @NO,
+            @"kDisableVideoInfoCards" : @NO,
+            @"kDisableVideoAutoPlay" : @NO,
+            @"kDisableDoubleTapToSkip" : @NO,
+            @"kHideChannelWatermark" : @NO,
+            @"kAlwaysShowPlayerBar" : @NO,
+            @"kShowWhenVideoEnds" : @NO,
+            @"kShowSeconds" : @NO,
+            @"kUse24HourClock" : @NO,
+            // Under-video options
+            @"kNoDownloadButton" : @NO,
+            // Overlay options
+            @"kShowStatussBarInOverlay" : @NO,
+            @"kHidePreviousButtonInOverlay" : @NO,
+            @"kHideNextButtonInOverlay" : @NO,
+            @"kHideAutoPlaySwitchInOverlay" : @NO,
+            @"kHideCaptionsSubtitlesButtonInOverlay" : @NO,
+            @"kDisableRelatedVideosInOverlay" : @NO,
+            @"kHideOverlayDarkBackground" : @NO,
+            // Tabbar options
+            @"kStartupPageInt" : @0,
+            @"kHideTabBar" : @NO,
             @"kHideTabBarLabels" : @NO,
             @"kHideExploreTab" : @NO,
             @"kHideUploadTab" : @NO,
-            @"kDisableDoubleTapToSkip" : @NO,
-            @"kHideOverlayDarkBackground" : @NO,
-            @"kHidePreviousButtonInOverlay" : @NO,
-            @"kHideNextButtonInOverlay" : @NO,
-            @"kDisableVideoAutoPlay" : @NO,
-            @"kHideAutoPlaySwitchInOverlay" : @NO,
-            @"kHideCaptionsSubtitlesButtonInOverlay" : @NO,
-            @"kDisableVideoInfoCards" : @NO,
-            @"kNoSearchButton" : @NO,
-            @"kHideChannelWatermark" : @NO,
-            @"kUnlockUHDQuality" : @NO,
+            @"kHideSubscriptionsTab" : @NO,
+            @"kHideLibraryTab" : @NO,
+            // Color options
+            @"kYTRebornColourOptionsVTwo" : [NSKeyedArchiver archivedDataWithRootObject:[NSData data]
+                                                                  requiringSecureCoding:nil
+                                                                                  error:nil],
+            // Search options
+            @"kEnableEnhancedSearchBar" : @NO,
+            @"kDisableVoiceSearch" : @NO,
+            // Shorts options
             @"kHideShortsCameraButton" : @NO,
             @"kHideShortsMoreActionsButton" : @NO,
             @"kHideShortsLikeButton" : @NO,
             @"kHideShortsDislikeButton" : @NO,
             @"kHideShortsCommentsButton" : @NO,
             @"kHideShortsShareButton" : @NO,
-            @"kAutoFullSCreen" : @NO,
-            @"kHideYouTubeLogo" : @NO,
-            @"kEnableEnhancedSearchBar" : @NO,
-            @"kHideTabBar" : @NO,
-            @"kUseNativeShareSheet" : @NO,
-            @"kShowWhenVideoEnds" : @NO,
-            @"kEnableiPadStyleOniPhone" : @NO,
-            @"kShowStatussBarInOverlay" : @NO,
-            @"kAlwaysShowPlayerBar" : @NO,
-            @"kDisableRelatedVideosInOverlay" : @NO,
-            @"kStartupPageInt" : @0,
-            @"kYTRebornColourOptionsVTwo" : [NSKeyedArchiver archivedDataWithRootObject:[NSData data]
-                                                                  requiringSecureCoding:nil
-                                                                                  error:nil],
+            // Reborn options
+            @"kHideRebornPIPButton" : dlopen("/Library/MobileSubstrate/DynamicLibraries/YouPiP.dylib", RTLD_LAZY) ||
+                    dlopen([[[NSBundle mainBundle].bundlePath stringByAppendingPathComponent:@"Frameworks/YouPiP.dylib"]
+                               UTF8String],
+                           RTLD_LAZY)
+                ? @YES
+                : @NO,
+            @"kHideRebornDWNButton" : @NO,
+            @"kHideRebornOPButton" : @NO,
         }];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableNoVideoAds"] == YES)
+        [defaults synchronize];
+        if ([defaults boolForKey:@"kEnableNoVideoAds"] == YES)
             %init(gNoVideoAds);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableBackgroundPlayback"] == YES)
+        if ([defaults boolForKey:@"kEnableBackgroundPlayback"] == YES)
             %init(gBackgroundPlayback);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kNoDownloadButton"] == YES)
+        if ([defaults boolForKey:@"kNoDownloadButton"] == YES)
             %init(gNoDownloadButton);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kNoCastButton"] == YES)
+        if ([defaults boolForKey:@"kNoCastButton"] == YES)
             %init(gNoCastButton);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kNoNotificationButton"] == YES)
+        if ([defaults boolForKey:@"kNoNotificationButton"] == YES)
             %init(gNoNotificationButton);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kAllowHDOnCellularData"] == YES)
+        if ([defaults boolForKey:@"kAllowHDOnCellularData"] == YES)
             %init(gAllowHDOnCellularData);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableVideoEndscreenPopups"] == YES)
+        if ([defaults boolForKey:@"kDisableVideoEndscreenPopups"] == YES)
             %init(gDisableVideoEndscreenPopups);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableYouTubeKidsPopup"] == YES)
+        if ([defaults boolForKey:@"kDisableYouTubeKidsPopup"] == YES)
             %init(gDisableYouTubeKids);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableVoiceSearch"] == YES)
+        if ([defaults boolForKey:@"kDisableVoiceSearch"] == YES)
             %init(gDisableVoiceSearch);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableHints"] == YES)
+        if ([defaults boolForKey:@"kDisableHints"] == YES)
             %init(gDisableHints);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideTabBarLabels"] == YES)
+        if ([defaults boolForKey:@"kHideTabBarLabels"] == YES)
             %init(gHideTabBarLabels);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideExploreTab"] == YES)
+        if ([defaults boolForKey:@"kHideExploreTab"] == YES)
             %init(gHideExploreTab);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideUploadTab"] == YES)
+        if ([defaults boolForKey:@"kHideUploadTab"] == YES)
             %init(gHideUploadTab);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideSubscriptionsTab"] == YES)
+        if ([defaults boolForKey:@"kHideSubscriptionsTab"] == YES)
             %init(gHideSubscriptionsTab);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideLibraryTab"] == YES)
+        if ([defaults boolForKey:@"kHideLibraryTab"] == YES)
             %init(gHideLibraryTab);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableDoubleTapToSkip"] == YES)
+        if ([defaults boolForKey:@"kDisableDoubleTapToSkip"] == YES)
             %init(gDisableDoubleTapToSkip);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideOverlayDarkBackground"] == YES)
+        if ([defaults boolForKey:@"kHideOverlayDarkBackground"] == YES)
             %init(gHideOverlayDarkBackground);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHidePreviousButtonInOverlay"] == YES)
+        if ([defaults boolForKey:@"kHidePreviousButtonInOverlay"] == YES)
             %init(gHidePreviousButtonInOverlay);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideNextButtonInOverlay"] == YES)
+        if ([defaults boolForKey:@"kHideNextButtonInOverlay"] == YES)
             %init(gHideNextButtonInOverlay);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableVideoAutoPlay"] == YES)
+        if ([defaults boolForKey:@"kDisableVideoAutoPlay"] == YES)
             %init(gDisableVideoAutoPlay);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideAutoPlaySwitchInOverlay"] == YES)
+        if ([defaults boolForKey:@"kHideAutoPlaySwitchInOverlay"] == YES)
             %init(gHideAutoPlaySwitchInOverlay);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideCaptionsSubtitlesButtonInOverlay"] == YES)
+        if ([defaults boolForKey:@"kHideCaptionsSubtitlesButtonInOverlay"] == YES)
             %init(gHideCaptionsSubtitlesButtonInOverlay);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableVideoInfoCards"] == YES)
+        if ([defaults boolForKey:@"kDisableVideoInfoCards"] == YES)
             %init(gDisableVideoInfoCards);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kNoSearchButton"] == YES)
+        if ([defaults boolForKey:@"kNoSearchButton"] == YES)
             %init(gNoSearchButton);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideChannelWatermark"] == YES)
+        if ([defaults boolForKey:@"kHideChannelWatermark"] == YES)
             %init(gHideChannelWatermark);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kUnlockUHDQuality"] == YES)
+        if ([defaults boolForKey:@"kUnlockUHDQuality"] == YES)
             %init(gUnlockUHDQuality);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideShortsCameraButton"] == YES)
+        if ([defaults boolForKey:@"kHideShortsCameraButton"] == YES)
             %init(gHideShortsCameraButton);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideShortsMoreActionsButton"] == YES)
+        if ([defaults boolForKey:@"kHideShortsMoreActionsButton"] == YES)
             %init(gHideShortsMoreActionsButton);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideShortsLikeButton"] == YES)
+        if ([defaults boolForKey:@"kHideShortsLikeButton"] == YES)
             %init(gHideShortsLikeButton);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideShortsDislikeButton"] == YES)
+        if ([defaults boolForKey:@"kHideShortsDislikeButton"] == YES)
             %init(gHideShortsDislikeButton);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideShortsCommentsButton"] == YES)
+        if ([defaults boolForKey:@"kHideShortsCommentsButton"] == YES)
             %init(gHideShortsCommentsButton);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideShortsShareButton"] == YES)
+        if ([defaults boolForKey:@"kHideShortsShareButton"] == YES)
             %init(gHideShortsShareButton);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kAutoFullScreen"] == YES)
+        if ([defaults boolForKey:@"kAutoFullScreen"] == YES)
             %init(gAutoFullScreen);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideYouTubeLogo"] == YES)
+        if ([defaults boolForKey:@"kHideYouTubeLogo"] == YES)
             %init(gHideYouTubeLogo);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableEnhancedSearchBar"] == YES)
+        if ([defaults boolForKey:@"kEnableEnhancedSearchBar"] == YES)
             %init(gEnableEnhancedSearchBar);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideTabBar"] == YES)
+        if ([defaults boolForKey:@"kHideTabBar"] == YES)
             %init(gHideTabBar);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kUseNativeShareSheet"] == YES)
+        if ([defaults boolForKey:@"kUseNativeShareSheet"] == YES)
             %init(gUseNativeShareSheet);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kShowWhenVideoEnds"] == YES)
+        if ([defaults boolForKey:@"kShowWhenVideoEnds"] == YES)
             %init(gShowWhenVideoEnds);
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableiPadStyleOniPhone"] == NO &
-            [[NSUserDefaults standardUserDefaults] boolForKey:@"kShowStatusBarInOverlay"] == YES) {
+        if ([defaults boolForKey:@"kEnableiPadStyleOniPhone"] == NO &
+            [defaults boolForKey:@"kShowStatusBarInOverlay"] == YES) {
             %init(gShowStatusBarInOverlay);
         }
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kShowStatusBarInOverlay"] == YES &
-                [[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableiPadStyleOniPhone"] == YES ||
-            [[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableiPadStyleOniPhone"] == YES &
-                [[NSUserDefaults standardUserDefaults] boolForKey:@"kShowStatusBarInOverlay"] == NO) {
+        if ([defaults boolForKey:@"kShowStatusBarInOverlay"] == YES &
+                [defaults boolForKey:@"kEnableiPadStyleOniPhone"] == YES ||
+            [defaults boolForKey:@"kEnableiPadStyleOniPhone"] == YES &
+                [defaults boolForKey:@"kShowStatusBarInOverlay"] == NO) {
             %init(gEnableiPadStyleOniPhone);
         }
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kAlwaysShowPlayerBar"] == NO &
-            [[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableRelatedVideosInOverlay"] == YES) {
+        if ([defaults boolForKey:@"kAlwaysShowPlayerBar"] == NO &
+            [defaults boolForKey:@"kDisableRelatedVideosInOverlay"] == YES) {
             %init(gDisableRelatedVideosInOverlay);
         }
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kAlwaysShowPlayerBar"] == YES &
-                [[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableRelatedVideosInOverlay"] == YES ||
-            [[NSUserDefaults standardUserDefaults] boolForKey:@"kAlwaysShowPlayerBar"] == YES &
-                [[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableRelatedVideosInOverlay"] == NO) {
+        if ([defaults boolForKey:@"kAlwaysShowPlayerBar"] == YES &
+                [defaults boolForKey:@"kDisableRelatedVideosInOverlay"] == YES ||
+            [defaults boolForKey:@"kAlwaysShowPlayerBar"] == YES &
+                [defaults boolForKey:@"kDisableRelatedVideosInOverlay"] == NO) {
             %init(gAlwaysShowPlayerBar);
         }
-        NSData* colorData = [[NSUserDefaults standardUserDefaults] objectForKey:@"kYTRebornColourOptionsVTwo"];
+        NSData* colorData = [defaults objectForKey:@"kYTRebornColourOptionsVTwo"];
         NSKeyedUnarchiver* unarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:colorData error:nil];
         [unarchiver setRequiresSecureCoding:NO];
         NSString* hexString = [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];

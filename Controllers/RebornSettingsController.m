@@ -48,7 +48,7 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
         return 1;
     }
     if (section == 1) {
-        return 2;
+        return 3;
     }
     return 0;
 }
@@ -75,6 +75,16 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
         }
         if (indexPath.section == 1) {
             if (indexPath.row == 0) {
+                cell.textLabel.text = @"Hide Overlay 'PIP' Button";
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                UISwitch *hideRebornPIPButton = [[UISwitch alloc] initWithFrame:CGRectZero];
+                [hideRebornPIPButton addTarget:self 
+                                        action:@selector(toggleHideRebornPIPButton:) 
+                              forControlEvents:UIControlEventValueChanged];
+                hideRebornPIPButton.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kHideRebornPIPButton"];
+                cell.accessoryView = hideRebornPIPButton;
+            }
+            if (indexPath.row == 1) {
                 cell.textLabel.text = @"Hide Overlay 'DWN' Button";
                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
                 UISwitch* hideRebornDWNButton = [[UISwitch alloc] initWithFrame:CGRectZero];
@@ -84,7 +94,7 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
                 hideRebornDWNButton.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kHideRebornDWNButton"];
                 cell.accessoryView = hideRebornDWNButton;
             }
-            if (indexPath.row == 1) {
+            if (indexPath.row == 2) {
                 cell.textLabel.text = @"Hide Overlay 'OP' Button";
                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
                 UISwitch* hideRebornOPButton = [[UISwitch alloc] initWithFrame:CGRectZero];
@@ -139,6 +149,17 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
 - (void)done {
     [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
+
+- (void)toggleHideRebornPIPButton:(UISwitch *)sender {
+    if ([sender isOn]) {
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kHideRebornPIPButton"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    } else {
+        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kHideRebornPIPButton"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+}
+
 
 - (void)toggleHideRebornDWNButton:(UISwitch*)sender {
     if ([sender isOn]) {
