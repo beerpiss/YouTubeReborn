@@ -158,7 +158,7 @@ static NSError *YouTubeError(NSError *error, NSSet *regionsAllowed, NSString *la
 		
 		[request setHTTPMethod:@"POST"];
 		
-		NSString *string = [NSString stringWithFormat:@"{'context': {'client': {'hl': 'en','clientName': 'IOS','clientVersion': '16.46', 'deviceModel': 'iPhone14,3','playbackContext': {'contentPlaybackContext': {'html5Preference': 'HTML5_PREF_WANTS'}}}},'contentCheckOk': true,'racyCheckOk': true,'videoId': '%@'}", self.videoIdentifier];
+		NSString *string = [NSString stringWithFormat:@"{'context': {'client': {'hl': 'en','clientName': 'ANDROID','clientVersion': '16.20','playbackContext': {'contentPlaybackContext': {'html5Preference': 'HTML5_PREF_WANTS'}}}},'contentCheckOk': true,'racyCheckOk': true,'videoId': '%@'}", self.videoIdentifier];
 		
 		NSData *postData = [string dataUsingEncoding:NSASCIIStringEncoding];
 		
