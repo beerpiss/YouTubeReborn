@@ -1938,7 +1938,6 @@ int selectedTabIndex = 0;
             @"kHideShortsLikeButton" : @NO,
             @"kHideShortsDislikeButton" : @NO,
             @"kHideShortsCommentsButton" : @NO,
-            @"kHideShortsCommentsButton" : @NO,
             @"kHideShortsShareButton" : @NO,
             @"kAutoFullSCreen" : @NO,
             @"kHideYouTubeLogo" : @NO,
@@ -1950,8 +1949,8 @@ int selectedTabIndex = 0;
             @"kShowStatussBarInOverlay" : @NO,
             @"kAlwaysShowPlayerBar" : @NO,
             @"kDisableRelatedVideosInOverlay" : @NO,
-            @"kStartupPageInt": 0,
-            @"kYTRebornColourOptionsVTwo" : [NSKeyedArchiver archivedDataWithRootObject:nil
+            @"kStartupPageInt" : @0,
+            @"kYTRebornColourOptionsVTwo" : [NSKeyedArchiver archivedDataWithRootObject:[NSData data]
                                                                   requiringSecureCoding:nil
                                                                                   error:nil],
         }];
