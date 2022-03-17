@@ -1948,7 +1948,7 @@ int selectedTabIndex = 0;
             @"kHideSubscriptionsTab" : @NO,
             @"kHideLibraryTab" : @NO,
             // Color options
-            @"kYTRebornColourOptionsVTwo" : nil,
+            @"kYTRebornColourOptionsVTwo" : [NSData data],
             // Search options
             @"kEnableEnhancedSearchBar" : @NO,
             @"kDisableVoiceSearch" : @NO,
