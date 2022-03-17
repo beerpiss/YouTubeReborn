@@ -1,0 +1,13 @@
+{
+    "externalFormatters.languages": {
+        "logos": {
+            "command": "python3",
+            "arguments": [
+                "\/path\/to\/\/logos-format",
+                "--assume-filename",
+                "objc"
+            ]
+        }
+    }
+
+}
