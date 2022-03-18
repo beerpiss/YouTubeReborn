@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import <HBLog.h>
 #import "DTTJailbreakDetection/DTTJailbreakDetection.h"
 
 %group NoSideloadLogouts
@@ -39,7 +40,7 @@
 %ctor {
     @autoreleasepool {
         if (![DTTJailbreakDetection isJailbroken]) {
-            NSLog(@"[YouTube Reborn] Not jailbroken, preventing logouts");
+            HBLogDebug(@"[YouTube Reborn] Not jailbroken, preventing logouts");
             %init(NoSideloadLogouts);
         }
     }

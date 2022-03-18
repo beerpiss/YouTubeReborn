@@ -334,7 +334,7 @@ NSURL* pipURL;
                               downloadProgress:nil
                              completionHandler:^(NSURLResponse* response, id responseObject, NSError* error) {
                                if (error) {
-                                   NSLog(@"Error: %@", error);
+                                   HBLogError(@"[YouTube Reborn] YouTube API request failed: %@", error);
                                } else {
                                    NSMutableDictionary* jsonResponse = responseObject;
                                    NSArray* items = [jsonResponse objectForKey:@"items"];
@@ -510,7 +510,7 @@ NSURL* pipURL;
                               downloadProgress:nil
                              completionHandler:^(NSURLResponse* response, id responseObject, NSError* error) {
                                if (error) {
-                                   NSLog(@"Error: %@", error);
+                                   HBLogError(@"[YouTube Reborn] YouTube API request failed: %@", error);
                                } else {
                                    NSMutableDictionary* jsonResponse = responseObject;
                                    NSArray* items = [jsonResponse objectForKey:@"items"];

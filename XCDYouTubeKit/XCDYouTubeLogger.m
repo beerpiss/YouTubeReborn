@@ -5,6 +5,7 @@
 #import "XCDYouTubeLogger.h"
 
 #import <objc/runtime.h>
+#import <HBLog.h>
 
 const NSInteger XCDYouTubeKitLumberjackContext = (NSInteger)0xced70676;
 
@@ -25,8 +26,25 @@ static void (^LogHandler)(NSString * (^)(void), XCDLogLevel, const char *, const
 {
 	char *logLevelString = getenv("XCDYouTubeKitLogLevel");
 	NSUInteger logLevelMask = logLevelString ? strtoul(logLevelString, NULL, 0) : (1 << XCDLogLevelError) | (1 << XCDLogLevelWarning);
-	if ((1 << level) & logLevelMask)
-		NSLog(@"[XCDYouTubeKit] %@", message());
+	if ((1 << level) & logLevelMask) {
+		switch (level) {
+			case XCDLogLevelError:
+				HBLogError(@"[XCDYouTubeKit] Error: %@", message());
+				break;
+			case XCDLogLevelWarning:
+				HBLogWarn(@"[XCDYouTubeKit] Warning: %@", message());
+				break;
+			case XCDLogLevelInfo:
+				HBLogInfo(@"[XCDYouTubeKit] Info: %@", message());
+				break;
+			case XCDLogLevelDebug:
+				HBLogDebug(@"[XCDYouTubeKit] Debug: %@", message());
+				break;
+			case XCDLogLevelVerbose:
+				HBLogDebug(@"[XCDYouTubeKit] Verbose: %@", message());
+				break;
+		}
+	}
 };
 
 @implementation XCDYouTubeLogger
