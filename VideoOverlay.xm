@@ -131,7 +131,7 @@ NSURL* pipURL;
                     [self.overlayButtonThree setImage:_btnImage forState:UIControlStateNormal];
 
                     HBLogDebug(@"[YouTube Reborn] Inserting overlay button %d to view: %@", i, self.overlayButtonOne);
-                    self.overlayButtonOne.frame = CGRectMake((CGFloat)40 + 45 * i, _overlayButtonsY, 40.0, 30.0);
+                    self.overlayButtonThree.frame = CGRectMake((CGFloat)40 + 45 * i, _overlayButtonsY, 40.0, 30.0);
                     [self addSubview:self.overlayButtonThree];
                     break;
                 default:
