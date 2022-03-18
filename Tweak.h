@@ -94,9 +94,9 @@
 
 // Tweak Variables
 
-extern NSMutableArray* overlayButtons;
-extern NSString *pipTime;
-extern NSURL *pipURL;
+extern NSMutableArray* _overlayButtons;
+extern NSString* pipTime;
+extern NSURL* pipURL;
 
 // YouTube Api Variables
 

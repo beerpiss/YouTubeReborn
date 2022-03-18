@@ -5,6 +5,7 @@
 #import <UIKit/UIKit.h>
 #import <XCDYouTubeKit/XCDYouTubeKit.h>
 #import <dlfcn.h>
+#import "Controllers/PictureInPictureController.h"
 #import "Controllers/RootOptionsController.h"
 #import "DTTJailbreakDetection/DTTJailbreakDetection.h"
 #import "Tweak.h"
@@ -147,10 +148,16 @@ YTUserDefaults* ytThemeSettings;
 }
 %end
 
-NSMutableArray* overlayButtons = [NSMutableArray array];
+NSMutableArray* _overlayButtons = [NSMutableArray array];
+NSDictionary* _overlaySelectors = @{
+    @"DWN" : [NSValue valueWithPointer:@selector(optionsAction:)],
+    @"OP" : [NSValue valueWithPointer:@selector(playInApp)],
+    @"PIP" : [NSValue valueWithPointer:@selector(pictureInPicture)],
+};
+NSString* pipTime;
+NSURL* pipURL;
 
 %hook YTMainAppControlsOverlayView
-
 %property(retain, nonatomic) UIButton* overlayButtonOne;
 %property(retain, nonatomic) UIButton* overlayButtonTwo;
 %property(retain, nonatomic) UIButton* overlayButtonThree;
@@ -158,136 +165,93 @@ NSMutableArray* overlayButtons = [NSMutableArray array];
 - (id)initWithDelegate:(id)delegate {
     self = %orig;
     if (self) {
+        CGFloat _overlayButtonsY = 9;
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kShowStatusBarInOverlay"]) {
+            if (![[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableiPadStyleOniPhone"]) {
+                _overlayButtonsY = 24;
+            }
+        }
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideRebornDWNButton"] == NO) {
-            [overlayButtons addObject:@"DWN"];
+            [_overlayButtons addObject:@"DWN"];
         }
         if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideRebornOPButton"] == NO) {
-            [overlayButtons addObject:@"OP"];
+            [_overlayButtons addObject:@"OP"];
         }
-        int overlayButtonsCount = [overlayButtons count];
-        if (overlayButtonsCount == 1) {
-            self.overlayButtonOne = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-            if ([overlayButtons[0] isEqual:@"DWN"]) {
-                [self.overlayButtonOne addTarget:self
-                                          action:@selector(optionsAction:)
-                                forControlEvents:UIControlEventTouchUpInside];
-            }
-            if ([overlayButtons[0] isEqual:@"OP"]) {
-                [self.overlayButtonOne addTarget:self
-                                          action:@selector(playInApp)
-                                forControlEvents:UIControlEventTouchUpInside];
-            }
-            [self.overlayButtonOne setTitle:overlayButtons[0] forState:UIControlStateNormal];
-            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kShowStatusBarInOverlay"] == YES) {
-                if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableiPadStyleOniPhone"] == YES) {
-                    self.overlayButtonOne.frame = CGRectMake(40, 9, 40.0, 30.0);
-                } else {
-                    self.overlayButtonOne.frame = CGRectMake(40, 24, 40.0, 30.0);
-                }
-            } else {
-                self.overlayButtonOne.frame = CGRectMake(40, 9, 40.0, 30.0);
-            }
-            [self addSubview:self.overlayButtonOne];
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideRebornPIPButton"] == NO) {
+            [_overlayButtons addObject:@"PIP"];
         }
-        if (overlayButtonsCount == 2) {
-            self.overlayButtonOne = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-            self.overlayButtonTwo = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-            if ([overlayButtons[0] isEqual:@"DWN"]) {
-                [self.overlayButtonOne addTarget:self
-                                          action:@selector(optionsAction:)
-                                forControlEvents:UIControlEventTouchUpInside];
+        int _overlayButtonsCount = [_overlayButtons count];
+        for (int i = 0; i < _overlayButtonsCount; i++) {
+            switch (i) {
+                case 0:
+                    NSLog(@"[YouTube Reborn] Creating overlay button %d: %@", i, _overlayButtons[i]);
+                    self.overlayButtonOne = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+                    [self.overlayButtonOne
+                               addTarget:self
+                                  action:(SEL)[[_overlaySelectors objectForKey:_overlayButtons[i]] pointerValue]
+                        forControlEvents:UIControlEventTouchUpInside];
+                    [self.overlayButtonOne setTitle:_overlayButtons[i] forState:UIControlStateNormal];
+                    NSLog(@"[YouTube Reborn] Inserting overlay button %d to view: %@", i, self.overlayButtonOne);
+                    self.overlayButtonOne.frame = CGRectMake((CGFloat)40 + 45 * i, _overlayButtonsY, 40.0, 30.0);
+                    [self addSubview:self.overlayButtonOne];
+                    break;
+                case 1:
+                    NSLog(@"[YouTube Reborn] Creating overlay button %d: %@", i, _overlayButtons[i]);
+                    self.overlayButtonTwo = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+                    [self.overlayButtonTwo
+                               addTarget:self
+                                  action:(SEL)[[_overlaySelectors objectForKey:_overlayButtons[i]] pointerValue]
+                        forControlEvents:UIControlEventTouchUpInside];
+                    [self.overlayButtonTwo setTitle:_overlayButtons[i] forState:UIControlStateNormal];
+                    NSLog(@"[YouTube Reborn] Inserting overlay button %d to view: %@", i, self.overlayButtonTwo);
+                    self.overlayButtonTwo.frame = CGRectMake((CGFloat)40 + 45 * i, _overlayButtonsY, 40.0, 30.0);
+                    [self addSubview:self.overlayButtonTwo];
+                    break;
+                case 2:
+                    NSLog(@"[YouTube Reborn] Creating overlay button %d: %@", i, _overlayButtons[i]);
+                    self.overlayButtonThree = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+                    [self.overlayButtonThree
+                               addTarget:self
+                                  action:(SEL)[[_overlaySelectors objectForKey:_overlayButtons[i]] pointerValue]
+                        forControlEvents:UIControlEventTouchUpInside];
+                    [self.overlayButtonThree setTitle:_overlayButtons[i] forState:UIControlStateNormal];
+                    NSLog(@"[YouTube Reborn] Inserting overlay button %d to view: %@", i, self.overlayButtonThree);
+                    self.overlayButtonThree.frame = CGRectMake((CGFloat)40 + 45 * i, _overlayButtonsY, 40.0, 30.0);
+                    [self addSubview:self.overlayButtonThree];
+                    break;
+                default:
+                    break;
             }
-            if ([overlayButtons[0] isEqual:@"OP"]) {
-                [self.overlayButtonOne addTarget:self
-                                          action:@selector(playInApp)
-                                forControlEvents:UIControlEventTouchUpInside];
-            }
-            if ([overlayButtons[1] isEqual:@"DWN"]) {
-                [self.overlayButtonTwo addTarget:self
-                                          action:@selector(optionsAction:)
-                                forControlEvents:UIControlEventTouchUpInside];
-            }
-            if ([overlayButtons[1] isEqual:@"OP"]) {
-                [self.overlayButtonTwo addTarget:self
-                                          action:@selector(playInApp)
-                                forControlEvents:UIControlEventTouchUpInside];
-            }
-            [self.overlayButtonOne setTitle:overlayButtons[0] forState:UIControlStateNormal];
-            [self.overlayButtonTwo setTitle:overlayButtons[1] forState:UIControlStateNormal];
-            if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kShowStatusBarInOverlay"] == YES) {
-                if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableiPadStyleOniPhone"] == YES) {
-                    self.overlayButtonOne.frame = CGRectMake(40, 9, 40.0, 30.0);
-                    self.overlayButtonTwo.frame = CGRectMake(85, 9, 40.0, 30.0);
-                } else {
-                    self.overlayButtonOne.frame = CGRectMake(40, 24, 40.0, 30.0);
-                    self.overlayButtonTwo.frame = CGRectMake(85, 24, 40.0, 30.0);
-                }
-            } else {
-                self.overlayButtonOne.frame = CGRectMake(40, 9, 40.0, 30.0);
-                self.overlayButtonTwo.frame = CGRectMake(85, 9, 40.0, 30.0);
-            }
-            [self addSubview:self.overlayButtonOne];
-            [self addSubview:self.overlayButtonTwo];
         }
     }
     return self;
 }
 
 - (void)setTopOverlayVisible:(BOOL)visible isAutonavCanceledState:(BOOL)canceledState {
-    int overlayButtonsCount = [overlayButtons count];
-    if (canceledState) {
-        if (overlayButtonsCount == 1) {
-            if (!self.overlayButtonOne.hidden) {
-                self.overlayButtonOne.alpha = 0.0;
-            }
-        }
-        if (overlayButtonsCount == 2) {
-            if (!self.overlayButtonOne.hidden) {
-                self.overlayButtonOne.alpha = 0.0;
-            }
-            if (!self.overlayButtonTwo.hidden) {
-                self.overlayButtonTwo.alpha = 0.0;
-            }
-        }
-        if (overlayButtonsCount == 3) {
-            if (!self.overlayButtonOne.hidden) {
-                self.overlayButtonOne.alpha = 0.0;
-            }
-            if (!self.overlayButtonTwo.hidden) {
-                self.overlayButtonTwo.alpha = 0.0;
-            }
-            if (!self.overlayButtonThree.hidden) {
-                self.overlayButtonThree.alpha = 0.0;
-            }
-        }
-    } else {
-        if (overlayButtonsCount == 1) {
-            if (!self.overlayButtonOne.hidden) {
-                int rotation = [layoutOut playerViewLayout];
-                if (rotation == 2) {
-                    self.overlayButtonOne.alpha = visible ? 1.0 : 0.0;
-                } else {
+    int _overlayButtonsCount = [_overlayButtons count];
+    int rotation = [layoutOut playerViewLayout];
+    for (int i = 0; i < _overlayButtonsCount; i++) {
+        switch (i) {
+            case 0:
+                if (canceledState)
                     self.overlayButtonOne.alpha = 0.0;
-                }
-            }
-        }
-        if (overlayButtonsCount == 2) {
-            if (!self.overlayButtonOne.hidden) {
-                int rotation = [layoutOut playerViewLayout];
-                if (rotation == 2) {
-                    self.overlayButtonOne.alpha = visible ? 1.0 : 0.0;
-                } else {
-                    self.overlayButtonOne.alpha = 0.0;
-                }
-            }
-            if (!self.overlayButtonTwo.hidden) {
-                int rotation = [layoutOut playerViewLayout];
-                if (rotation == 2) {
-                    self.overlayButtonTwo.alpha = visible ? 1.0 : 0.0;
-                } else {
+                else if (!self.overlayButtonOne.hidden)
+                    self.overlayButtonOne.alpha = rotation == 2 ? (visible ? 1.0 : 0.0) : 0.0;
+                break;
+            case 1:
+                if (canceledState)
                     self.overlayButtonTwo.alpha = 0.0;
-                }
-            }
+                else if (!self.overlayButtonTwo.hidden)
+                    self.overlayButtonTwo.alpha = rotation == 2 ? (visible ? 1.0 : 0.0) : 0.0;
+                break;
+            case 2:
+                if (canceledState)
+                    self.overlayButtonThree.alpha = 0.0;
+                else if (!self.overlayButtonThree.hidden)
+                    self.overlayButtonThree.alpha = rotation == 2 ? (visible ? 1.0 : 0.0) : 0.0;
+                break;
+            default:
+                break;
         }
     }
     %orig;
@@ -743,6 +707,85 @@ NSMutableArray* overlayButtons = [NSMutableArray array];
                    [urlErrorViewController presentViewController:alertUrlError animated:YES completion:nil];
                }
              }];
+}
+
+%new
+;
+- (void)pictureInPicture {
+    NSInteger videoStatus = [stateOut playerState];
+    if (videoStatus == 3) {
+        MRMediaRemoteSendCommand(MRMediaRemoteCommandPause, 0);
+    }
+
+    XCDYouTubeClient.innertubeApiKey = YTApiKey;
+
+    NSString* videoIdentifier = [playingVideoID currentVideoID];
+
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableBackgroundPlayback"] == YES) {
+        [[XCDYouTubeClient defaultClient]
+            getVideoWithIdentifier:videoIdentifier
+                 completionHandler:^(XCDYouTubeVideo* video, NSError* error) {
+                   if (video) {
+                       NSDictionary* streamURLs = video.streamURLs;
+                       pipTime = [NSString stringWithFormat:@"%f", [resultOut mediaTime]];
+                       pipURL = streamURLs[XCDYouTubeVideoQualityHTTPLiveStreaming];
+                       if (pipURL != NULL) {
+                           PictureInPictureController* pictureInPictureController =
+                               [[PictureInPictureController alloc] init];
+                           pictureInPictureController.videoTime = pipTime;
+                           pictureInPictureController.videoPath = pipURL;
+                           UINavigationController* pictureInPictureControllerView =
+                               [[UINavigationController alloc] initWithRootViewController:pictureInPictureController];
+                           pictureInPictureControllerView.modalPresentationStyle = UIModalPresentationFullScreen;
+
+                           UIViewController* pictureInPictureViewController = self._viewControllerForAncestor;
+                           [pictureInPictureViewController presentViewController:pictureInPictureControllerView
+                                                                        animated:YES
+                                                                      completion:nil];
+                       } else {
+                           UIAlertController* alertPip = [UIAlertController
+                               alertControllerWithTitle:@"Notice"
+                                                message:@"This video is not supported by the Picture-In-Picture"
+                                         preferredStyle:UIAlertControllerStyleAlert];
+
+                           [alertPip addAction:[UIAlertAction actionWithTitle:@"Okay"
+                                                                        style:UIAlertActionStyleCancel
+                                                                      handler:^(UIAlertAction* _Nonnull action){
+                                                                      }]];
+
+                           UIViewController* pipViewController = self._viewControllerForAncestor;
+                           [pipViewController presentViewController:alertPip animated:YES completion:nil];
+                       }
+                   } else {
+                       UIAlertController* alertPip = [UIAlertController
+                           alertControllerWithTitle:@"Notice"
+                                            message:@"Unable to fetch youtube video url from googles api"
+                                     preferredStyle:UIAlertControllerStyleAlert];
+
+                       [alertPip addAction:[UIAlertAction actionWithTitle:@"Okay"
+                                                                    style:UIAlertActionStyleCancel
+                                                                  handler:^(UIAlertAction* _Nonnull action){
+                                                                  }]];
+
+                       UIViewController* pipViewController = self._viewControllerForAncestor;
+                       [pipViewController presentViewController:alertPip animated:YES completion:nil];
+                   }
+                 }];
+    } else {
+        UIAlertController* alertPip =
+            [UIAlertController alertControllerWithTitle:@"Notice"
+                                                message:@"You must enable 'Background Playback' in YouTube Reborn "
+                                                        @"settings to use Picture-In-Picture"
+                                         preferredStyle:UIAlertControllerStyleAlert];
+
+        [alertPip addAction:[UIAlertAction actionWithTitle:@"Okay"
+                                                     style:UIAlertActionStyleCancel
+                                                   handler:^(UIAlertAction* _Nonnull action){
+                                                   }]];
+
+        UIViewController* pipViewController = self._viewControllerForAncestor;
+        [pipViewController presentViewController:alertPip animated:YES completion:nil];
+    }
 }
 %end
 
@@ -1903,7 +1946,7 @@ int selectedTabIndex = 0;
 
 %ctor {
     @autoreleasepool {
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
         [defaults registerDefaults:@{
             // General options
             @"kEnableiPadStyleOniPhone" : @NO,
