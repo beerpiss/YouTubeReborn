@@ -25,14 +25,14 @@
 #import "AFURLResponseSerialization.h"
 
 #import <Availability.h>
-#import <TargetConditionals.h>
 #import <Security/Security.h>
+#import <TargetConditionals.h>
 
-#import <netinet/in.h>
-#import <netinet6/in6.h>
 #import <arpa/inet.h>
 #import <ifaddrs.h>
 #import <netdb.h>
+#import <netinet/in.h>
+#import <netinet6/in6.h>
 
 #if TARGET_OS_IOS || TARGET_OS_TV
 #import <UIKit/UIKit.h>
@@ -41,7 +41,7 @@
 #endif
 
 @interface AFHTTPSessionManager ()
-@property (readwrite, nonatomic, strong) NSURL *baseURL;
+@property(readwrite, nonatomic, strong) NSURL* baseURL;
 @end
 
 @implementation AFHTTPSessionManager
@@ -55,17 +55,15 @@
     return [self initWithBaseURL:nil];
 }
 
-- (instancetype)initWithBaseURL:(NSURL *)url {
+- (instancetype)initWithBaseURL:(NSURL*)url {
     return [self initWithBaseURL:url sessionConfiguration:nil];
 }
 
-- (instancetype)initWithSessionConfiguration:(NSURLSessionConfiguration *)configuration {
+- (instancetype)initWithSessionConfiguration:(NSURLSessionConfiguration*)configuration {
     return [self initWithBaseURL:nil sessionConfiguration:configuration];
 }
 
-- (instancetype)initWithBaseURL:(NSURL *)url
-           sessionConfiguration:(NSURLSessionConfiguration *)configuration
-{
+- (instancetype)initWithBaseURL:(NSURL*)url sessionConfiguration:(NSURLSessionConfiguration*)configuration {
     self = [super initWithSessionConfiguration:configuration];
     if (!self) {
         return nil;
@@ -86,13 +84,13 @@
 
 #pragma mark -
 
-- (void)setRequestSerializer:(AFHTTPRequestSerializer <AFURLRequestSerialization> *)requestSerializer {
+- (void)setRequestSerializer:(AFHTTPRequestSerializer<AFURLRequestSerialization>*)requestSerializer {
     NSParameterAssert(requestSerializer);
 
     _requestSerializer = requestSerializer;
 }
 
-- (void)setResponseSerializer:(AFHTTPResponseSerializer <AFURLResponseSerialization> *)responseSerializer {
+- (void)setResponseSerializer:(AFHTTPResponseSerializer<AFURLResponseSerialization>*)responseSerializer {
     NSParameterAssert(responseSerializer);
 
     [super setResponseSerializer:responseSerializer];
@@ -100,15 +98,23 @@
 
 @dynamic securityPolicy;
 
-- (void)setSecurityPolicy:(AFSecurityPolicy *)securityPolicy {
+- (void)setSecurityPolicy:(AFSecurityPolicy*)securityPolicy {
     if (securityPolicy.SSLPinningMode != AFSSLPinningModeNone && ![self.baseURL.scheme isEqualToString:@"https"]) {
-        NSString *pinningMode = @"Unknown Pinning Mode";
+        NSString* pinningMode = @"Unknown Pinning Mode";
         switch (securityPolicy.SSLPinningMode) {
-            case AFSSLPinningModeNone:        pinningMode = @"AFSSLPinningModeNone"; break;
-            case AFSSLPinningModeCertificate: pinningMode = @"AFSSLPinningModeCertificate"; break;
-            case AFSSLPinningModePublicKey:   pinningMode = @"AFSSLPinningModePublicKey"; break;
+            case AFSSLPinningModeNone:
+                pinningMode = @"AFSSLPinningModeNone";
+                break;
+            case AFSSLPinningModeCertificate:
+                pinningMode = @"AFSSLPinningModeCertificate";
+                break;
+            case AFSSLPinningModePublicKey:
+                pinningMode = @"AFSSLPinningModePublicKey";
+                break;
         }
-        NSString *reason = [NSString stringWithFormat:@"A security policy configured with `%@` can only be applied on a manager with a secure base URL (i.e. https)", pinningMode];
+        NSString* reason = [NSString stringWithFormat:@"A security policy configured with `%@` can only be applied on "
+                                                      @"a manager with a secure base URL (i.e. https)",
+                                                      pinningMode];
         @throw [NSException exceptionWithName:@"Invalid Security Policy" reason:reason userInfo:nil];
     }
 
@@ -117,15 +123,13 @@
 
 #pragma mark -
 
-- (NSURLSessionDataTask *)GET:(NSString *)URLString
-                   parameters:(nullable id)parameters
-                      headers:(nullable NSDictionary <NSString *, NSString *> *)headers
-                     progress:(nullable void (^)(NSProgress * _Nonnull))downloadProgress
-                      success:(nullable void (^)(NSURLSessionDataTask * _Nonnull, id _Nullable))success
-                      failure:(nullable void (^)(NSURLSessionDataTask * _Nullable, NSError * _Nonnull))failure
-{
-    
-    NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod:@"GET"
+- (NSURLSessionDataTask*)GET:(NSString*)URLString
+                  parameters:(nullable id)parameters
+                     headers:(nullable NSDictionary<NSString*, NSString*>*)headers
+                    progress:(nullable void (^)(NSProgress* _Nonnull))downloadProgress
+                     success:(nullable void (^)(NSURLSessionDataTask* _Nonnull, id _Nullable))success
+                     failure:(nullable void (^)(NSURLSessionDataTask* _Nullable, NSError* _Nonnull))failure {
+    NSURLSessionDataTask* dataTask = [self dataTaskWithHTTPMethod:@"GET"
                                                         URLString:URLString
                                                        parameters:parameters
                                                           headers:headers
@@ -133,169 +137,214 @@
                                                  downloadProgress:downloadProgress
                                                           success:success
                                                           failure:failure];
-    
+
     [dataTask resume];
-    
+
     return dataTask;
 }
 
-- (NSURLSessionDataTask *)HEAD:(NSString *)URLString
-                    parameters:(nullable id)parameters
-                       headers:(nullable NSDictionary<NSString *,NSString *> *)headers
-                       success:(nullable void (^)(NSURLSessionDataTask * _Nonnull))success
-                       failure:(nullable void (^)(NSURLSessionDataTask * _Nullable, NSError * _Nonnull))failure
-{
-    NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod:@"HEAD" URLString:URLString parameters:parameters headers:headers uploadProgress:nil downloadProgress:nil success:^(NSURLSessionDataTask *task, __unused id responseObject) {
-        if (success) {
-            success(task);
-        }
-    } failure:failure];
-    
+- (NSURLSessionDataTask*)HEAD:(NSString*)URLString
+                   parameters:(nullable id)parameters
+                      headers:(nullable NSDictionary<NSString*, NSString*>*)headers
+                      success:(nullable void (^)(NSURLSessionDataTask* _Nonnull))success
+                      failure:(nullable void (^)(NSURLSessionDataTask* _Nullable, NSError* _Nonnull))failure {
+    NSURLSessionDataTask* dataTask =
+        [self dataTaskWithHTTPMethod:@"HEAD"
+                           URLString:URLString
+                          parameters:parameters
+                             headers:headers
+                      uploadProgress:nil
+                    downloadProgress:nil
+                             success:^(NSURLSessionDataTask* task, __unused id responseObject) {
+                               if (success) {
+                                   success(task);
+                               }
+                             }
+                             failure:failure];
+
     [dataTask resume];
-    
+
     return dataTask;
 }
 
-- (nullable NSURLSessionDataTask *)POST:(NSString *)URLString
-                             parameters:(nullable id)parameters
-                                headers:(nullable NSDictionary <NSString *, NSString *> *)headers
-                               progress:(nullable void (^)(NSProgress *uploadProgress))uploadProgress
-                                success:(nullable void (^)(NSURLSessionDataTask *task, id _Nullable responseObject))success
-                                failure:(nullable void (^)(NSURLSessionDataTask * _Nullable task, NSError *error))failure
-{
-    NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod:@"POST" URLString:URLString parameters:parameters headers:headers uploadProgress:uploadProgress downloadProgress:nil success:success failure:failure];
-    
+- (nullable NSURLSessionDataTask*)
+          POST:(NSString*)URLString
+    parameters:(nullable id)parameters
+       headers:(nullable NSDictionary<NSString*, NSString*>*)headers
+      progress:(nullable void (^)(NSProgress* uploadProgress))uploadProgress
+       success:(nullable void (^)(NSURLSessionDataTask* task, id _Nullable responseObject))success
+       failure:(nullable void (^)(NSURLSessionDataTask* _Nullable task, NSError* error))failure {
+    NSURLSessionDataTask* dataTask = [self dataTaskWithHTTPMethod:@"POST"
+                                                        URLString:URLString
+                                                       parameters:parameters
+                                                          headers:headers
+                                                   uploadProgress:uploadProgress
+                                                 downloadProgress:nil
+                                                          success:success
+                                                          failure:failure];
+
     [dataTask resume];
-    
+
     return dataTask;
 }
 
-- (NSURLSessionDataTask *)POST:(NSString *)URLString
-                    parameters:(nullable id)parameters
-                       headers:(nullable NSDictionary<NSString *,NSString *> *)headers
-     constructingBodyWithBlock:(nullable void (^)(id<AFMultipartFormData> _Nonnull))block
-                      progress:(nullable void (^)(NSProgress * _Nonnull))uploadProgress
-                       success:(nullable void (^)(NSURLSessionDataTask * _Nonnull, id _Nullable))success failure:(void (^)(NSURLSessionDataTask * _Nullable, NSError * _Nonnull))failure
-{
-    NSError *serializationError = nil;
-    NSMutableURLRequest *request = [self.requestSerializer multipartFormRequestWithMethod:@"POST" URLString:[[NSURL URLWithString:URLString relativeToURL:self.baseURL] absoluteString] parameters:parameters constructingBodyWithBlock:block error:&serializationError];
-    for (NSString *headerField in headers.keyEnumerator) {
+- (NSURLSessionDataTask*)POST:(NSString*)URLString
+                   parameters:(nullable id)parameters
+                      headers:(nullable NSDictionary<NSString*, NSString*>*)headers
+    constructingBodyWithBlock:(nullable void (^)(id<AFMultipartFormData> _Nonnull))block
+                     progress:(nullable void (^)(NSProgress* _Nonnull))uploadProgress
+                      success:(nullable void (^)(NSURLSessionDataTask* _Nonnull, id _Nullable))success
+                      failure:(void (^)(NSURLSessionDataTask* _Nullable, NSError* _Nonnull))failure {
+    NSError* serializationError = nil;
+    NSMutableURLRequest* request = [self.requestSerializer
+        multipartFormRequestWithMethod:@"POST"
+                             URLString:[[NSURL URLWithString:URLString relativeToURL:self.baseURL] absoluteString]
+                            parameters:parameters
+             constructingBodyWithBlock:block
+                                 error:&serializationError];
+    for (NSString* headerField in headers.keyEnumerator) {
         [request setValue:headers[headerField] forHTTPHeaderField:headerField];
     }
     if (serializationError) {
         if (failure) {
             dispatch_async(self.completionQueue ?: dispatch_get_main_queue(), ^{
-                failure(nil, serializationError);
+              failure(nil, serializationError);
             });
         }
-        
+
         return nil;
     }
-    
-    __block NSURLSessionDataTask *task = [self uploadTaskWithStreamedRequest:request progress:uploadProgress completionHandler:^(NSURLResponse * __unused response, id responseObject, NSError *error) {
-        if (error) {
-            if (failure) {
-                failure(task, error);
-            }
-        } else {
-            if (success) {
-                success(task, responseObject);
-            }
-        }
-    }];
-    
+
+    __block NSURLSessionDataTask* task =
+        [self uploadTaskWithStreamedRequest:request
+                                   progress:uploadProgress
+                          completionHandler:^(NSURLResponse* __unused response, id responseObject, NSError* error) {
+                            if (error) {
+                                if (failure) {
+                                    failure(task, error);
+                                }
+                            } else {
+                                if (success) {
+                                    success(task, responseObject);
+                                }
+                            }
+                          }];
+
     [task resume];
-    
+
     return task;
 }
 
-- (NSURLSessionDataTask *)PUT:(NSString *)URLString
-                   parameters:(nullable id)parameters
-                      headers:(nullable NSDictionary<NSString *,NSString *> *)headers
-                      success:(nullable void (^)(NSURLSessionDataTask *task, id responseObject))success
-                      failure:(nullable void (^)(NSURLSessionDataTask *task, NSError *error))failure
-{
-    NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod:@"PUT" URLString:URLString parameters:parameters headers:headers uploadProgress:nil downloadProgress:nil success:success failure:failure];
-    
+- (NSURLSessionDataTask*)PUT:(NSString*)URLString
+                  parameters:(nullable id)parameters
+                     headers:(nullable NSDictionary<NSString*, NSString*>*)headers
+                     success:(nullable void (^)(NSURLSessionDataTask* task, id responseObject))success
+                     failure:(nullable void (^)(NSURLSessionDataTask* task, NSError* error))failure {
+    NSURLSessionDataTask* dataTask = [self dataTaskWithHTTPMethod:@"PUT"
+                                                        URLString:URLString
+                                                       parameters:parameters
+                                                          headers:headers
+                                                   uploadProgress:nil
+                                                 downloadProgress:nil
+                                                          success:success
+                                                          failure:failure];
+
     [dataTask resume];
-    
+
     return dataTask;
 }
 
-- (NSURLSessionDataTask *)PATCH:(NSString *)URLString
+- (NSURLSessionDataTask*)PATCH:(NSString*)URLString
+                    parameters:(nullable id)parameters
+                       headers:(nullable NSDictionary<NSString*, NSString*>*)headers
+                       success:(nullable void (^)(NSURLSessionDataTask* task, id responseObject))success
+                       failure:(nullable void (^)(NSURLSessionDataTask* task, NSError* error))failure {
+    NSURLSessionDataTask* dataTask = [self dataTaskWithHTTPMethod:@"PATCH"
+                                                        URLString:URLString
+                                                       parameters:parameters
+                                                          headers:headers
+                                                   uploadProgress:nil
+                                                 downloadProgress:nil
+                                                          success:success
+                                                          failure:failure];
+
+    [dataTask resume];
+
+    return dataTask;
+}
+
+- (NSURLSessionDataTask*)DELETE:(NSString*)URLString
                      parameters:(nullable id)parameters
-                        headers:(nullable NSDictionary<NSString *,NSString *> *)headers
-                        success:(nullable void (^)(NSURLSessionDataTask *task, id responseObject))success
-                        failure:(nullable void (^)(NSURLSessionDataTask *task, NSError *error))failure
-{
-    NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod:@"PATCH" URLString:URLString parameters:parameters headers:headers uploadProgress:nil downloadProgress:nil success:success failure:failure];
-    
+                        headers:(nullable NSDictionary<NSString*, NSString*>*)headers
+                        success:(nullable void (^)(NSURLSessionDataTask* task, id responseObject))success
+                        failure:(nullable void (^)(NSURLSessionDataTask* task, NSError* error))failure {
+    NSURLSessionDataTask* dataTask = [self dataTaskWithHTTPMethod:@"DELETE"
+                                                        URLString:URLString
+                                                       parameters:parameters
+                                                          headers:headers
+                                                   uploadProgress:nil
+                                                 downloadProgress:nil
+                                                          success:success
+                                                          failure:failure];
+
     [dataTask resume];
-    
+
     return dataTask;
 }
 
-- (NSURLSessionDataTask *)DELETE:(NSString *)URLString
-                      parameters:(nullable id)parameters
-                         headers:(nullable NSDictionary<NSString *,NSString *> *)headers
-                         success:(nullable void (^)(NSURLSessionDataTask *task, id responseObject))success
-                         failure:(nullable void (^)(NSURLSessionDataTask *task, NSError *error))failure
-{
-    NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod:@"DELETE" URLString:URLString parameters:parameters headers:headers uploadProgress:nil downloadProgress:nil success:success failure:failure];
-    
-    [dataTask resume];
-    
-    return dataTask;
-}
-
-
-- (NSURLSessionDataTask *)dataTaskWithHTTPMethod:(NSString *)method
-                                       URLString:(NSString *)URLString
-                                      parameters:(nullable id)parameters
-                                         headers:(nullable NSDictionary <NSString *, NSString *> *)headers
-                                  uploadProgress:(nullable void (^)(NSProgress *uploadProgress)) uploadProgress
-                                downloadProgress:(nullable void (^)(NSProgress *downloadProgress)) downloadProgress
-                                         success:(nullable void (^)(NSURLSessionDataTask *task, id _Nullable responseObject))success
-                                         failure:(nullable void (^)(NSURLSessionDataTask * _Nullable task, NSError *error))failure
-{
-    NSError *serializationError = nil;
-    NSMutableURLRequest *request = [self.requestSerializer requestWithMethod:method URLString:[[NSURL URLWithString:URLString relativeToURL:self.baseURL] absoluteString] parameters:parameters error:&serializationError];
-    for (NSString *headerField in headers.keyEnumerator) {
+- (NSURLSessionDataTask*)
+    dataTaskWithHTTPMethod:(NSString*)method
+                 URLString:(NSString*)URLString
+                parameters:(nullable id)parameters
+                   headers:(nullable NSDictionary<NSString*, NSString*>*)headers
+            uploadProgress:(nullable void (^)(NSProgress* uploadProgress))uploadProgress
+          downloadProgress:(nullable void (^)(NSProgress* downloadProgress))downloadProgress
+                   success:(nullable void (^)(NSURLSessionDataTask* task, id _Nullable responseObject))success
+                   failure:(nullable void (^)(NSURLSessionDataTask* _Nullable task, NSError* error))failure {
+    NSError* serializationError = nil;
+    NSMutableURLRequest* request = [self.requestSerializer
+        requestWithMethod:method
+                URLString:[[NSURL URLWithString:URLString relativeToURL:self.baseURL] absoluteString]
+               parameters:parameters
+                    error:&serializationError];
+    for (NSString* headerField in headers.keyEnumerator) {
         [request setValue:headers[headerField] forHTTPHeaderField:headerField];
     }
     if (serializationError) {
         if (failure) {
             dispatch_async(self.completionQueue ?: dispatch_get_main_queue(), ^{
-                failure(nil, serializationError);
+              failure(nil, serializationError);
             });
         }
 
         return nil;
     }
 
-    __block NSURLSessionDataTask *dataTask = nil;
+    __block NSURLSessionDataTask* dataTask = nil;
     dataTask = [self dataTaskWithRequest:request
                           uploadProgress:uploadProgress
                         downloadProgress:downloadProgress
-                       completionHandler:^(NSURLResponse * __unused response, id responseObject, NSError *error) {
-        if (error) {
-            if (failure) {
-                failure(dataTask, error);
-            }
-        } else {
-            if (success) {
-                success(dataTask, responseObject);
-            }
-        }
-    }];
+                       completionHandler:^(NSURLResponse* __unused response, id responseObject, NSError* error) {
+                         if (error) {
+                             if (failure) {
+                                 failure(dataTask, error);
+                             }
+                         } else {
+                             if (success) {
+                                 success(dataTask, responseObject);
+                             }
+                         }
+                       }];
 
     return dataTask;
 }
 
 #pragma mark - NSObject
 
-- (NSString *)description {
-    return [NSString stringWithFormat:@"<%@: %p, baseURL: %@, session: %@, operationQueue: %@>", NSStringFromClass([self class]), self, [self.baseURL absoluteString], self.session, self.operationQueue];
+- (NSString*)description {
+    return [NSString stringWithFormat:@"<%@: %p, baseURL: %@, session: %@, operationQueue: %@>",
+                                      NSStringFromClass([self class]), self, [self.baseURL absoluteString],
+                                      self.session, self.operationQueue];
 }
 
 #pragma mark - NSSecureCoding
@@ -304,13 +353,15 @@
     return YES;
 }
 
-- (instancetype)initWithCoder:(NSCoder *)decoder {
-    NSURL *baseURL = [decoder decodeObjectOfClass:[NSURL class] forKey:NSStringFromSelector(@selector(baseURL))];
-    NSURLSessionConfiguration *configuration = [decoder decodeObjectOfClass:[NSURLSessionConfiguration class] forKey:@"sessionConfiguration"];
+- (instancetype)initWithCoder:(NSCoder*)decoder {
+    NSURL* baseURL = [decoder decodeObjectOfClass:[NSURL class] forKey:NSStringFromSelector(@selector(baseURL))];
+    NSURLSessionConfiguration* configuration = [decoder decodeObjectOfClass:[NSURLSessionConfiguration class]
+                                                                     forKey:@"sessionConfiguration"];
     if (!configuration) {
-        NSString *configurationIdentifier = [decoder decodeObjectOfClass:[NSString class] forKey:@"identifier"];
+        NSString* configurationIdentifier = [decoder decodeObjectOfClass:[NSString class] forKey:@"identifier"];
         if (configurationIdentifier) {
-            configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:configurationIdentifier];
+            configuration =
+                [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:configurationIdentifier];
         }
     }
 
@@ -319,9 +370,12 @@
         return nil;
     }
 
-    self.requestSerializer = [decoder decodeObjectOfClass:[AFHTTPRequestSerializer class] forKey:NSStringFromSelector(@selector(requestSerializer))];
-    self.responseSerializer = [decoder decodeObjectOfClass:[AFHTTPResponseSerializer class] forKey:NSStringFromSelector(@selector(responseSerializer))];
-    AFSecurityPolicy *decodedPolicy = [decoder decodeObjectOfClass:[AFSecurityPolicy class] forKey:NSStringFromSelector(@selector(securityPolicy))];
+    self.requestSerializer = [decoder decodeObjectOfClass:[AFHTTPRequestSerializer class]
+                                                   forKey:NSStringFromSelector(@selector(requestSerializer))];
+    self.responseSerializer = [decoder decodeObjectOfClass:[AFHTTPResponseSerializer class]
+                                                    forKey:NSStringFromSelector(@selector(responseSerializer))];
+    AFSecurityPolicy* decodedPolicy = [decoder decodeObjectOfClass:[AFSecurityPolicy class]
+                                                            forKey:NSStringFromSelector(@selector(securityPolicy))];
     if (decodedPolicy) {
         self.securityPolicy = decodedPolicy;
     }
@@ -329,7 +383,7 @@
     return self;
 }
 
-- (void)encodeWithCoder:(NSCoder *)coder {
+- (void)encodeWithCoder:(NSCoder*)coder {
     [super encodeWithCoder:coder];
 
     [coder encodeObject:self.baseURL forKey:NSStringFromSelector(@selector(baseURL))];
@@ -345,8 +399,9 @@
 
 #pragma mark - NSCopying
 
-- (instancetype)copyWithZone:(NSZone *)zone {
-    AFHTTPSessionManager *HTTPClient = [[[self class] allocWithZone:zone] initWithBaseURL:self.baseURL sessionConfiguration:self.session.configuration];
+- (instancetype)copyWithZone:(NSZone*)zone {
+    AFHTTPSessionManager* HTTPClient = [[[self class] allocWithZone:zone] initWithBaseURL:self.baseURL
+                                                                     sessionConfiguration:self.session.configuration];
 
     HTTPClient.requestSerializer = [self.requestSerializer copyWithZone:zone];
     HTTPClient.responseSerializer = [self.responseSerializer copyWithZone:zone];

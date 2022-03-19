@@ -103,176 +103,60 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
             }
         }
         if (indexPath.section == 1) {
-            if (indexPath.row == 0) {
-                cell.textLabel.text = @"View Downloads";
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            NSMutableArray* titles = [NSMutableArray array];
+            [titles addObject:@"View Downloads"];
+            if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"UISupportsDocumentBrowser"]) {
+                [titles addObject:@"View Downloads In Files"];
             }
-
-            BOOL canOpenInFiles = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"UISupportsDocumentBrowser"];
-            BOOL canOpenInFilza = [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"filza://"]];
-            if (canOpenInFiles && canOpenInFilza) {
-                // Can open in both Files and Filza (probably)
-                if (indexPath.row == 1) {
-                    cell.textLabel.text = @"View Downloads In Files";
-                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                }
-                if (indexPath.row == 2) {
-                    cell.textLabel.text = @"View Downloads In Filza";
-                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                }
-            } else if (canOpenInFiles) {
-                // Can only open in Files app
-                if (indexPath.row == 1) {
-                    cell.textLabel.text = @"View Downloads In Files";
-                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                }
-            } else if (canOpenInFilza) {
-                // Can only open in Filza
-                if (indexPath.row == 1) {
-                    cell.textLabel.text = @"View Downloads In Filza";
-                    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-                }
-            } else {
-                // If you reach this place, then I guess View Downloads is your only option
+            if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"filza://"]]) {
+                [titles addObject:@"View Downloads In Filza"];
             }
+            cell.textLabel.text = titles[indexPath.row];
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
         if (indexPath.section == 2) {
-            if (indexPath.row == 0) {
-                cell.textLabel.text = @"Video Options";
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            }
-            if (indexPath.row == 1) {
-                cell.textLabel.text = @"Under-Video Options";
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            }
-            if (indexPath.row == 2) {
-                cell.textLabel.text = @"Overlay Options";
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            }
-            if (indexPath.row == 3) {
-                cell.textLabel.text = @"Tab Bar Options";
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            }
-            if (indexPath.row == 4) {
-                cell.textLabel.text = @"Colour Options";
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            }
-            if (indexPath.row == 5) {
-                cell.textLabel.text = @"Search Options";
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            }
-            if (indexPath.row == 6) {
-                cell.textLabel.text = @"Shorts Options";
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            }
-            if (indexPath.row == 7) {
-                cell.textLabel.text = @"SponsorBlock Options";
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            }
+            NSArray* titles = @[
+                @"Video Options", @"Under-Video Options", @"Overlay Options", @"Tab Bar Options", @"Colour Options",
+                @"Search Options", @"Shorts Options",
+                @"SponsorBlock Options",  // TODO: Actually implement SponsorBlock
+            ];
+            cell.textLabel.text = titles[indexPath.row];
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
         if (indexPath.section == 3) {
-            if (indexPath.row == 0) {
-                cell.textLabel.text = @"Enable iPad Style On iPhone";
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                UISwitch* enableiPadStyleOniPhone = [[UISwitch alloc] initWithFrame:CGRectZero];
-                [enableiPadStyleOniPhone addTarget:self
-                                            action:@selector(toggleEnableiPadStyleOniPhone:)
-                                  forControlEvents:UIControlEventValueChanged];
-                enableiPadStyleOniPhone.on =
-                    [[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableiPadStyleOniPhone"];
-                cell.accessoryView = enableiPadStyleOniPhone;
-            }
-            if (indexPath.row == 1) {
-                cell.textLabel.text = @"Unlock UHD Quality";
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                UISwitch* unlockUHDQuality = [[UISwitch alloc] initWithFrame:CGRectZero];
-                [unlockUHDQuality addTarget:self
-                                     action:@selector(toggleUnlockUHDQuality:)
-                           forControlEvents:UIControlEventValueChanged];
-                unlockUHDQuality.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kUnlockUHDQuality"];
-                cell.accessoryView = unlockUHDQuality;
-            }
-            if (indexPath.row == 2) {
-                cell.textLabel.text = @"No Cast Button";
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                UISwitch* noCastButton = [[UISwitch alloc] initWithFrame:CGRectZero];
-                [noCastButton addTarget:self
-                                 action:@selector(toggleNoCastButton:)
-                       forControlEvents:UIControlEventValueChanged];
-                noCastButton.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kNoCastButton"];
-                cell.accessoryView = noCastButton;
-            }
-            if (indexPath.row == 3) {
-                cell.textLabel.text = @"No Notification Button";
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                UISwitch* noNotificationButton = [[UISwitch alloc] initWithFrame:CGRectZero];
-                [noNotificationButton addTarget:self
-                                         action:@selector(toggleNoNotificationButton:)
-                               forControlEvents:UIControlEventValueChanged];
-                noNotificationButton.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kNoNotificationButton"];
-                cell.accessoryView = noNotificationButton;
-            }
-            if (indexPath.row == 4) {
-                cell.textLabel.text = @"No Search Button";
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                UISwitch* noSearchButton = [[UISwitch alloc] initWithFrame:CGRectZero];
-                [noSearchButton addTarget:self
-                                   action:@selector(toggleNoSearchButton:)
-                         forControlEvents:UIControlEventValueChanged];
-                noSearchButton.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kNoSearchButton"];
-                cell.accessoryView = noSearchButton;
-            }
-            if (indexPath.row == 5) {
-                cell.textLabel.text = @"Disable YouTube Kids";
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                UISwitch* disableYouTubeKidsPopup = [[UISwitch alloc] initWithFrame:CGRectZero];
-                [disableYouTubeKidsPopup addTarget:self
-                                            action:@selector(toggleDisableYouTubeKidsPopup:)
-                                  forControlEvents:UIControlEventValueChanged];
-                disableYouTubeKidsPopup.on =
-                    [[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableYouTubeKidsPopup"];
-                cell.accessoryView = disableYouTubeKidsPopup;
-            }
-            if (indexPath.row == 6) {
-                cell.textLabel.text = @"Disable Hints";
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                UISwitch* disableHints = [[UISwitch alloc] initWithFrame:CGRectZero];
-                [disableHints addTarget:self
-                                 action:@selector(toggleDisableHints:)
-                       forControlEvents:UIControlEventValueChanged];
-                disableHints.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableHints"];
-                cell.accessoryView = disableHints;
-            }
-            if (indexPath.row == 7) {
-                cell.textLabel.text = @"Hide YouTube Logo";
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                UISwitch* hideYouTubeLogo = [[UISwitch alloc] initWithFrame:CGRectZero];
-                [hideYouTubeLogo addTarget:self
-                                    action:@selector(toggleHideYouTubeLogo:)
-                          forControlEvents:UIControlEventValueChanged];
-                hideYouTubeLogo.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kHideYouTubeLogo"];
-                cell.accessoryView = hideYouTubeLogo;
-            }
-            if (indexPath.row == 8) {
-                cell.textLabel.text = @"Use Native Share Sheet";
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                UISwitch* useNativeShareSheet = [[UISwitch alloc] initWithFrame:CGRectZero];
-                [useNativeShareSheet addTarget:self
-                                        action:@selector(toggleUseNativeShareSheet:)
-                              forControlEvents:UIControlEventValueChanged];
-                useNativeShareSheet.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kUseNativeShareSheet"];
-                cell.accessoryView = useNativeShareSheet;
-            }
+            NSArray* titles = @[
+                @"Enable iPad Style On iPhone",
+                @"Unlock UHD Quality",
+                @"No Cast Button",
+                @"No Notification Button",
+                @"No Search Button",
+                @"Disable YouTube Kids",
+                @"Disable Hints",
+                @"Hide YouTube Logo",
+                @"Use Native Share Sheet",
+            ];
+            NSArray* titlesNames = @[
+                @"kEnableiPadStyleOniPhone",
+                @"kUnlockUHDQuality",
+                @"kNoCastButton",
+                @"kNoNotificationButton",
+                @"kNoSearchButton",
+                @"kDisableYouTubeKidsPopup",
+                @"kDisableHints",
+                @"kHideYouTubeLogo",
+                @"kUseNativeShareSheet",
+            ];
+            cell.textLabel.text = titles[indexPath.row];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            UISwitch* toggleSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
+            [toggleSwitch addTarget:self action:@selector(switchToggled:) forControlEvents:UIControlEventValueChanged];
+            toggleSwitch.on = [[NSUserDefaults standardUserDefaults] boolForKey:titlesNames[indexPath.row]];
+            cell.accessoryView = toggleSwitch;
         }
         if (indexPath.section == 4) {
-            if (indexPath.row == 0) {
-                cell.textLabel.text = @"Reborn Settings";
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            }
-            if (indexPath.row == 1) {
-                cell.textLabel.text = @"Credits";
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            }
+            NSArray* titles = @[ @"Reborn Settings", @"Credits" ];
+            cell.textLabel.text = titles[indexPath.row];
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
     }
     return cell;
@@ -334,88 +218,55 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
         }
     }
     if (indexPath.section == 2) {
-        if (indexPath.row == 0) {
-            VideoOptionsController* videoOptionsController = [[VideoOptionsController alloc] init];
-            UINavigationController* videoOptionsControllerView =
-                [[UINavigationController alloc] initWithRootViewController:videoOptionsController];
-            videoOptionsControllerView.modalPresentationStyle = UIModalPresentationFullScreen;
-
-            [self presentViewController:videoOptionsControllerView animated:YES completion:nil];
+        id optionsController;
+        switch (indexPath.row) {
+            case 0:
+                optionsController = [[VideoOptionsController alloc] init];
+                break;
+            case 1:
+                optionsController = [[UnderVideoOptionsController alloc] init];
+                break;
+            case 2:
+                optionsController = [[OverlayOptionsController alloc] init];
+                break;
+            case 3:
+                optionsController = [[TabBarOptionsController alloc] init];
+                break;
+            case 4:
+                optionsController = [[ColourOptionsController alloc] init];
+                break;
+            case 5:
+                optionsController = [[SearchOptionsController alloc] init];
+                break;
+            case 6:
+                optionsController = [[ShortsOptionsController alloc] init];
+                break;
+            case 7:
+                optionsController = [[SponsorBlockOptionsController alloc] init];
+                break;
+            default:
+                break;
         }
-        if (indexPath.row == 1) {
-            UnderVideoOptionsController* underVideoOptionsController = [[UnderVideoOptionsController alloc] init];
-            UINavigationController* underVideoOptionsControllerView =
-                [[UINavigationController alloc] initWithRootViewController:underVideoOptionsController];
-            underVideoOptionsControllerView.modalPresentationStyle = UIModalPresentationFullScreen;
-
-            [self presentViewController:underVideoOptionsControllerView animated:YES completion:nil];
-        }
-        if (indexPath.row == 2) {
-            OverlayOptionsController* overlayOptionsController = [[OverlayOptionsController alloc] init];
-            UINavigationController* overlayOptionsControllerView =
-                [[UINavigationController alloc] initWithRootViewController:overlayOptionsController];
-            overlayOptionsControllerView.modalPresentationStyle = UIModalPresentationFullScreen;
-
-            [self presentViewController:overlayOptionsControllerView animated:YES completion:nil];
-        }
-        if (indexPath.row == 3) {
-            TabBarOptionsController* tabBarOptionsController = [[TabBarOptionsController alloc] init];
-            UINavigationController* tabBarOptionsControllerView =
-                [[UINavigationController alloc] initWithRootViewController:tabBarOptionsController];
-            tabBarOptionsControllerView.modalPresentationStyle = UIModalPresentationFullScreen;
-
-            [self presentViewController:tabBarOptionsControllerView animated:YES completion:nil];
-        }
-        if (indexPath.row == 4) {
-            ColourOptionsController* colourOptionsController = [[ColourOptionsController alloc] init];
-            UINavigationController* colourOptionsControllerView =
-                [[UINavigationController alloc] initWithRootViewController:colourOptionsController];
-            colourOptionsControllerView.modalPresentationStyle = UIModalPresentationFullScreen;
-
-            [self presentViewController:colourOptionsControllerView animated:YES completion:nil];
-        }
-        if (indexPath.row == 5) {
-            SearchOptionsController* searchOptionsController = [[SearchOptionsController alloc] init];
-            UINavigationController* searchOptionsControllerView =
-                [[UINavigationController alloc] initWithRootViewController:searchOptionsController];
-            searchOptionsControllerView.modalPresentationStyle = UIModalPresentationFullScreen;
-
-            [self presentViewController:searchOptionsControllerView animated:YES completion:nil];
-        }
-        if (indexPath.row == 6) {
-            ShortsOptionsController* shortsOptionsController = [[ShortsOptionsController alloc] init];
-            UINavigationController* shortsOptionsControllerView =
-                [[UINavigationController alloc] initWithRootViewController:shortsOptionsController];
-            shortsOptionsControllerView.modalPresentationStyle = UIModalPresentationFullScreen;
-
-            [self presentViewController:shortsOptionsControllerView animated:YES completion:nil];
-        }
-        if (indexPath.row == 7) {
-            SponsorBlockOptionsController* sponsorBlockOptionsController = [[SponsorBlockOptionsController alloc] init];
-            UINavigationController* sponsorBlockOptionsControllerView =
-                [[UINavigationController alloc] initWithRootViewController:sponsorBlockOptionsController];
-            sponsorBlockOptionsControllerView.modalPresentationStyle = UIModalPresentationFullScreen;
-
-            [self presentViewController:sponsorBlockOptionsControllerView animated:YES completion:nil];
-        }
+        UINavigationController* optionsControllerView =
+            [[UINavigationController alloc] initWithRootViewController:optionsController];
+        optionsControllerView.modalPresentationStyle = UIModalPresentationFullScreen;
+        [self presentViewController:optionsControllerView animated:YES completion:nil];
     }
     if (indexPath.section == 4) {
-        if (indexPath.row == 0) {
-            RebornSettingsController* rebornSettingsController = [[RebornSettingsController alloc] init];
-            UINavigationController* rebornSettingsControllerView =
-                [[UINavigationController alloc] initWithRootViewController:rebornSettingsController];
-            rebornSettingsControllerView.modalPresentationStyle = UIModalPresentationFullScreen;
-
-            [self presentViewController:rebornSettingsControllerView animated:YES completion:nil];
+        id controller;
+        switch (indexPath.row) {
+            case 0:
+                controller = [[RebornSettingsController alloc] init];
+                break;
+            case 1:
+                controller = [[CreditsController alloc] init];
+                break;
+            default:
+                break;
         }
-        if (indexPath.row == 1) {
-            CreditsController* creditsController = [[CreditsController alloc] init];
-            UINavigationController* creditsControllerView =
-                [[UINavigationController alloc] initWithRootViewController:creditsController];
-            creditsControllerView.modalPresentationStyle = UIModalPresentationFullScreen;
-
-            [self presentViewController:creditsControllerView animated:YES completion:nil];
-        }
+        UINavigationController* controllerView = [[UINavigationController alloc] initWithRootViewController:controller];
+        controllerView.modalPresentationStyle = UIModalPresentationFullScreen;
+        [self presentViewController:controllerView animated:YES completion:nil];
     }
 }
 
@@ -465,99 +316,28 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
 }
 
 - (void)apply {
+    [[NSUserDefaults standardUserDefaults] synchronize];
     [[UIApplication sharedApplication] suspend];
     [NSThread sleepForTimeInterval:1.0];
     exit(0);
 }
 
-- (void)toggleEnableiPadStyleOniPhone:(UISwitch*)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kEnableiPadStyleOniPhone"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kEnableiPadStyleOniPhone"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
-}
-
-- (void)toggleUnlockUHDQuality:(UISwitch*)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kUnlockUHDQuality"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kUnlockUHDQuality"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
-}
-
-- (void)toggleNoCastButton:(UISwitch*)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kNoCastButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kNoCastButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
-}
-
-- (void)toggleNoNotificationButton:(UISwitch*)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kNoNotificationButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kNoNotificationButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
-}
-
-- (void)toggleNoSearchButton:(UISwitch*)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kNoSearchButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kNoSearchButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
-}
-
-- (void)toggleDisableYouTubeKidsPopup:(UISwitch*)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kDisableYouTubeKidsPopup"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kDisableYouTubeKidsPopup"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
-}
-
-- (void)toggleDisableHints:(UISwitch*)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kDisableHints"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kDisableHints"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
-}
-
-- (void)toggleHideYouTubeLogo:(UISwitch*)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kHideYouTubeLogo"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kHideYouTubeLogo"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
-}
-
-- (void)toggleUseNativeShareSheet:(UISwitch*)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kUseNativeShareSheet"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kUseNativeShareSheet"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+- (void)switchToggled:(UISwitch*)sender {
+    UITableViewCell* cell = (UITableViewCell*)sender.superview;
+    NSIndexPath* indexPath = [self.tableView indexPathForCell:cell];
+    NSArray* titlesNames = @[
+        @"kEnableiPadStyleOniPhone",
+        @"kUnlockUHDQuality",
+        @"kNoCastButton",
+        @"kNoNotificationButton",
+        @"kNoSearchButton",
+        @"kDisableYouTubeKidsPopup",
+        @"kDisableHints",
+        @"kHideYouTubeLogo",
+        @"kUseNativeShareSheet",
+    ];
+    [[NSUserDefaults standardUserDefaults] setBool:[sender isOn] forKey:titlesNames[indexPath.row]];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 @end

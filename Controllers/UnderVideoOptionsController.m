@@ -61,16 +61,15 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
             cell.backgroundColor = [UIColor colorWithRed:0.110 green:0.110 blue:0.118 alpha:1.0];
             cell.textLabel.textColor = [UIColor whiteColor];
         }
-        if (indexPath.row == 0) {
-            cell.textLabel.text = @"Hide Download Button";
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            UISwitch* noDownloadButton = [[UISwitch alloc] initWithFrame:CGRectZero];
-            [noDownloadButton addTarget:self
-                                 action:@selector(toggleNoDownloadButton:)
-                       forControlEvents:UIControlEventValueChanged];
-            noDownloadButton.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kNoDownloadButton"];
-            cell.accessoryView = noDownloadButton;
-        }
+        NSArray* titles = @[ @"Hide Download Button" ];
+        NSArray* titlesNames = @[ @"kNoDownloadButton" ];
+
+        cell.textLabel.text = titles[indexPath.row];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        UISwitch* toggleSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
+        [toggleSwitch addTarget:self action:@selector(switchToggled:) forControlEvents:UIControlEventValueChanged];
+        toggleSwitch.on = [[NSUserDefaults standardUserDefaults] boolForKey:titlesNames[indexPath.row]];
+        cell.accessoryView = toggleSwitch;
     }
     return cell;
 }
@@ -91,14 +90,12 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
     [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)toggleNoDownloadButton:(UISwitch*)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kNoDownloadButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kNoDownloadButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+- (void)switchToggled:(UISwitch*)sender {
+    UITableViewCell* cell = (UITableViewCell*)sender.superview;
+    NSIndexPath* indexPath = [self.tableView indexPathForCell:cell];
+    NSArray* titlesNames = @[ @"kNoDownloadButton" ];
+    [[NSUserDefaults standardUserDefaults] setBool:[sender isOn] forKey:titlesNames[indexPath.row]];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 @end
