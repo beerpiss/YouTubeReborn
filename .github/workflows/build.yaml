@@ -17,11 +17,15 @@ jobs:
       -
         name: Setup build environment
         run: |
+          set -o pipefail
+
           echo TERM=xterm >> $GITHUB_ENV
           echo PKGNAME=$(grep '^Package:' control | cut -d' ' -f2-) >> $GITHUB_ENV
           echo PKGVER=$(grep '^Version:' control | cut -d' ' -f2-) >> $GITHUB_ENV
           echo PKGARCH=$(grep '^Architecture:' control | cut -d' ' -f2-) >> $GITHUB_ENV
-          set -o pipefail
+          echo GIT_DATE=$(git show -s --format=%cs | tr -d "-") >> $GITHUB_ENV
+          echo GIT_COMMIT_HASH=$(git rev-parse --short HEAD) >> $GITHUB_ENV
+
           mkdir -p out
       -
         name: Build (release)
@@ -33,9 +37,10 @@ jobs:
         name: Build (debug)
         run: |
           gmake clean 2>&1 | grep -Ev --line-buffered 'getcwd|descriptor'
-
+          
           mkdir -p .theos/packages
-          echo $(( $GITHUB_RUN_NUMBER - 1 )) > .theos/packages/$PKGNAME-$PKGVER
+          echo $(( $GITHUB_RUN_NUMBER - 1 )) > .theos/packages/$PKGNAME-$PKGVER+git$GIT_DATE.$GIT_COMMIT_HASH
+          
           gmake package FINALPACKAGE=0 DEBUG=1 2>&1 | grep -Ev --line-buffered 'getcwd|descriptor'
           mv packages/* out/
       -
