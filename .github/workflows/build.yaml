@@ -15,8 +15,36 @@ jobs:
         name: Setup Theos
         uses: beerpiss/theos-action@v1
       -
-        name: Build
+        name: Setup build environment
         run: |
-          export TERM=xterm
+          echo TERM=xterm >> $GITHUB_ENV
+          echo PKGNAME=$(grep 'Package:' control | cut -d' ' -f2) >> $GITHUB_ENV
+          echo PKGVER=$(grep 'Version:' control | cut -d' ' -f2) >> $GITHUB_ENV
           set -o pipefail
+          mkdir -p out
+
+
+      -
+        name: Build (release)
+        run: |
+          gmake clean 2>&1 | grep -Ev --line-buffered 'getcwd|descriptor'
           gmake package FINALPACKAGE=1 2>&1 | grep -Ev --line-buffered 'getcwd|descriptor'
+          mv packages/* out/
+      - 
+        name: Build (debug)
+        run: |
+          gmake clean 2>&1 | grep -Ev --line-buffered 'getcwd|descriptor'
+          gmake package FINALPACKAGE=0 DEBUG=1 2>&1 | grep -Ev --line-buffered 'getcwd|descriptor'
+          mv packages/* out/
+      -
+        name: Upload artifacts (release)
+        uses: actions/upload-artifact@v3
+        with:
+          name: RELEASE
+          path: out/${{ env.PKGNAME }}_${{ env.PKGKVER }}_iphoneos-arm.deb
+      -
+        name: Upload artifacts (debug)
+        uses: actions/upload-artifact@v3
+        with:
+          name: DEBUG
+          path: out/${{ env.PKGNAME }}_${{ env.PKGVER }}-*+debug_iphoneos-arm.deb
