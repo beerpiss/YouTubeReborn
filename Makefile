@@ -18,8 +18,8 @@ before-all::
 # $(_DEBUG_NUMBER) is incremental.
 ifeq ($(_GIT_IS_INSIDE_WORK_TREE),true)
 ifeq ($(_GIT_TAG_NAME),undefined)
-	$(eval _PACKAGE_NAME := $(shell grep '^Package:' control | cut -d' ' -f2-))
-	$(eval _PACKAGE_VERSION := $(shell grep '^Version:' control | cut -d' ' -f2-))
+	$(eval _PACKAGE_NAME := $(shell grep '^Package:' $(_THEOS_DEB_PACKAGE_CONTROL_PATH) | cut -d' ' -f2-))
+	$(eval _PACKAGE_VERSION := $(shell grep '^Version:' $(_THEOS_DEB_PACKAGE_CONTROL_PATH) | cut -d' ' -f2-))
 	$(eval _GIT_DATE := $(shell git show -s --format=%cs | tr -d "-"))
 	$(eval _GIT_COMMIT_HASH := $(shell git rev-parse --short HEAD))
 	$(eval THEOS_PACKAGE_BASE_VERSION := $(_PACKAGE_VERSION)+git$(_GIT_DATE).$(_GIT_COMMIT_HASH))
@@ -47,7 +47,7 @@ before-clean::
 	fi
 
 TWEAK_NAME = YouTubeReborn
-YouTubeReborn_FILES = $(shell find . -maxdepth 1 -name '*.xm') $(shell find Controllers -name '*.m') $(shell find AFNetworking -name '*.m') $(shell find XCDYouTubeKit -name '*.m') $(shell find DTTJailbreakDetection -name '*.m')
+YouTubeReborn_FILES = $(shell find YouTubeReborn -name '*.xm') $(shell find Controllers -name '*.m') $(shell find AFNetworking -name '*.m') $(shell find XCDYouTubeKit -name '*.m') $(shell find DTTJailbreakDetection -name '*.m')
 YouTubeReborn_CFLAGS = -fobjc-arc
 YouTubeReborn_FRAMEWORKS = UIKit Foundation AVFoundation AVKit
 YouTubeReborn_PRIVATE_FRAMEWORKS = MediaRemote
