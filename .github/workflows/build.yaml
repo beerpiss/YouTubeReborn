@@ -48,7 +48,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: RELEASE
-          path: out/${{ env.PKGNAME }}_${{ env.PKGVER }}_${{ env.PKGARCH }}.deb
+          path: out/${{ env.PKGNAME }}_${{ env.PKGVER }}+git*_${{ env.PKGARCH }}.deb
       -
         name: Upload artifacts (debug)
         uses: actions/upload-artifact@v3
