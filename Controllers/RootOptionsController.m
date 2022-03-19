@@ -1,6 +1,6 @@
 #import "RootOptionsController.h"
 #import "../DTTJailbreakDetection/DTTJailbreakDetection.h"
-#import "../iOS15Fix.h"
+#import "iOS15Fix.h"
 #import "ColourOptionsController.h"
 #import "CreditsController.h"
 #import "DownloadsController.h"

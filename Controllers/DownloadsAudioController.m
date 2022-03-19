@@ -1,6 +1,6 @@
 #import "DownloadsAudioController.h"
 #import <MediaRemote/MediaRemote.h>
-#import "../iOS15Fix.h"
+#import "iOS15Fix.h"
 
 static int __isOSVersionAtLeast(int major, int minor, int patch) {
     NSOperatingSystemVersion version;

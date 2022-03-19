@@ -1,5 +1,5 @@
 #import "DownloadsController.h"
-#import "../iOS15Fix.h"
+#import "iOS15Fix.h"
 #import "DownloadsAudioController.h"
 #import "DownloadsVideoController.h"
 

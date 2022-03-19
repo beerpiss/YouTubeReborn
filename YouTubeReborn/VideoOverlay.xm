@@ -5,7 +5,7 @@
 #import <MediaRemote/MediaRemote.h>
 #import <UIKit/UIKit.h>
 #import <XCDYouTubeKit/XCDYouTubeKit.h>
-#import "Controllers/PictureInPictureController.h"
+#import "../Controllers/PictureInPictureController.h"
 #import "Tweak.h"
 
 static NSString* const YTApiKey = @"AIzaSyCGZHGUPP9wojQDfrwPEr7Pr-mhBanHAb8";

@@ -1,5 +1,5 @@
 #import "VideoOptionsController.h"
-#import "../iOS15Fix.h"
+#import "iOS15Fix.h"
 
 static int __isOSVersionAtLeast(int major, int minor, int patch) {
     NSOperatingSystemVersion version;

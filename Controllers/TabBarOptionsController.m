@@ -1,5 +1,5 @@
 #import "TabBarOptionsController.h"
-#import "../iOS15Fix.h"
+#import "iOS15Fix.h"
 #import "StartupPageOptionsController.h"
 
 static int __isOSVersionAtLeast(int major, int minor, int patch) {

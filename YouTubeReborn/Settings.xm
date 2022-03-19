@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import "Controllers/RootOptionsController.h"
+#import "../Controllers/RootOptionsController.h"
 #import "Tweak.h"
 
 YTUserDefaults* ytThemeSettings;

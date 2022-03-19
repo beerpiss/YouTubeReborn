@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 #import <HBLog.h>
-#import "DTTJailbreakDetection/DTTJailbreakDetection.h"
+#import "../DTTJailbreakDetection/DTTJailbreakDetection.h"
 
 %group NoSideloadLogouts
 %hook SSOKeychain
