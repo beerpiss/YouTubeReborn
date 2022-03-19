@@ -5,18 +5,18 @@
 
 @implementation PictureInPictureController
 
-AVPlayer *player;
-AVPlayerLayer *playerLayer;
-AVPictureInPictureController *pictureInPictureController;
+AVPlayer* player;
+AVPlayerLayer* playerLayer;
+AVPictureInPictureController* pictureInPictureController;
 
 - (void)loadView {
-	[super loadView];
+    [super loadView];
 
     [self.navigationController setNavigationBarHidden:YES animated:NO];
 
     [self setupLightDarkModeVideoView];
 
-    AVPlayerItem *playerItem = [[AVPlayerItem alloc] initWithURL:self.videoPath];
+    AVPlayerItem* playerItem = [[AVPlayerItem alloc] initWithURL:self.videoPath];
     player = [[AVPlayer alloc] initWithPlayerItem:playerItem];
     float newTimeFloat = [self.videoTime floatValue];
     CMTime newTime = CMTimeMakeWithSeconds(newTimeFloat, 1);
@@ -31,36 +31,38 @@ AVPictureInPictureController *pictureInPictureController;
 
     [self.view.layer addSublayer:playerLayer];
 
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    UIButton* button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [button addTarget:self action:@selector(closePip) forControlEvents:UIControlEventTouchUpInside];
     button.frame = self.view.bounds;
     [button setTitle:@"Tap To Stop Picture-In-Picture" forState:UIControlStateNormal];
     [self.view addSubview:button];
 }
 
-- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
     [super traitCollectionDidChange:previousTraitCollection];
     [self setupLightDarkModeVideoView];
 }
 
 @end
 
-@implementation PictureInPictureController(Privates)
+@implementation PictureInPictureController (Privates)
 
 - (void)setupLightDarkModeVideoView {
     if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleLight) {
         self.view.backgroundColor = [UIColor colorWithRed:0.949 green:0.949 blue:0.969 alpha:1.0];
-    }
-    else {
+    } else {
         self.view.backgroundColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:1.0];
     }
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+- (void)observeValueForKeyPath:(NSString*)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary*)change
+                       context:(void*)context {
     if (object == player && [keyPath isEqualToString:@"status"]) {
         if (player.status == AVPlayerStatusReadyToPlay) {
             [player play];
-            if([AVPictureInPictureController isPictureInPictureSupported]) {
+            if ([AVPictureInPictureController isPictureInPictureSupported]) {
                 pictureInPictureController = [[AVPictureInPictureController alloc] initWithPlayerLayer:playerLayer];
                 pictureInPictureController.delegate = self;
                 if (@available(iOS 14.2, *)) {
@@ -70,7 +72,7 @@ AVPictureInPictureController *pictureInPictureController;
         }
     } else if (object == player && [keyPath isEqualToString:@"timeControlStatus"]) {
         if (player.timeControlStatus == AVPlayerTimeControlStatusPlaying) {
-            if([AVPictureInPictureController isPictureInPictureSupported]) {
+            if ([AVPictureInPictureController isPictureInPictureSupported]) {
                 [pictureInPictureController startPictureInPicture];
             }
         }
