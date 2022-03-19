@@ -41,7 +41,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: RELEASE
-          path: out/${{ env.PKGNAME }}_${{ env.PKGKVER }}_iphoneos-arm.deb
+          path: out/${{ env.PKGNAME }}_${{ env.PKGVER }}_iphoneos-arm.deb
       -
         name: Upload artifacts (debug)
         uses: actions/upload-artifact@v3
