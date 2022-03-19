@@ -65,26 +65,20 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
             cell.backgroundColor = [UIColor colorWithRed:0.110 green:0.110 blue:0.118 alpha:1.0];
             cell.textLabel.textColor = [UIColor whiteColor];
         }
-        if (indexPath.row == 0) {
-            cell.textLabel.text = @"Enable Enhanced Search Bar";
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            UISwitch* enableEnhancedSearchBar = [[UISwitch alloc] initWithFrame:CGRectZero];
-            [enableEnhancedSearchBar addTarget:self
-                                        action:@selector(toggleEnableEnhancedSearchBar:)
-                              forControlEvents:UIControlEventValueChanged];
-            enableEnhancedSearchBar.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableEnhancedSearchBar"];
-            cell.accessoryView = enableEnhancedSearchBar;
-        }
-        if (indexPath.row == 1) {
-            cell.textLabel.text = @"Disable Voice Search";
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            UISwitch* disableVoiceSearch = [[UISwitch alloc] initWithFrame:CGRectZero];
-            [disableVoiceSearch addTarget:self
-                                   action:@selector(toggleDisableVoiceSearch:)
-                         forControlEvents:UIControlEventValueChanged];
-            disableVoiceSearch.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kDisableVoiceSearch"];
-            cell.accessoryView = disableVoiceSearch;
-        }
+        NSArray* titles = @[
+            @"Enable Enhanced Search Bar",
+            @"Disable Voice Search",
+        ];
+        NSArray* titlesNames = @[
+            @"kEnableEnhancedSearchBar",
+            @"kDisableVoiceSearch",
+        ];
+        cell.textLabel.text = titles[indexPath.row];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        UISwitch* toggleSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
+        [toggleSwitch addTarget:self action:@selector(switchToggled:) forControlEvents:UIControlEventValueChanged];
+        toggleSwitch.on = [[NSUserDefaults standardUserDefaults] boolForKey:titlesNames[indexPath.row]];
+        cell.accessoryView = toggleSwitch;
     }
     return cell;
 }
@@ -105,26 +99,15 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
     [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)toggleEnableEnhancedSearchBar:(UISwitch*)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kEnableEnhancedSearchBar"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-        [self.tableView reloadData];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kEnableEnhancedSearchBar"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-        [self.tableView reloadData];
-    }
-}
-
-- (void)toggleDisableVoiceSearch:(UISwitch*)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kDisableVoiceSearch"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kDisableVoiceSearch"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+- (void)switchToggled:(UISwitch*)sender {
+    UITableViewCell* cell = (UITableViewCell*)sender.superview;
+    NSIndexPath* indexPath = [self.tableView indexPathForCell:cell];
+    NSArray* titlesNames = @[
+        @"kEnableEnhancedSearchBar",
+        @"kDisableVoiceSearch",
+    ];
+    [[NSUserDefaults standardUserDefaults] setBool:[sender isOn] forKey:titlesNames[indexPath.row]];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 @end

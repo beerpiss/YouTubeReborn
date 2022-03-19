@@ -61,68 +61,28 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
             cell.backgroundColor = [UIColor colorWithRed:0.110 green:0.110 blue:0.118 alpha:1.0];
             cell.textLabel.textColor = [UIColor whiteColor];
         }
-        if (indexPath.row == 0) {
-            cell.textLabel.text = @"Hide Camera Buton";
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            UISwitch* hideShortsCameraButton = [[UISwitch alloc] initWithFrame:CGRectZero];
-            [hideShortsCameraButton addTarget:self
-                                       action:@selector(toggleHideShortsCameraButton:)
-                             forControlEvents:UIControlEventValueChanged];
-            hideShortsCameraButton.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kHideShortsCameraButton"];
-            cell.accessoryView = hideShortsCameraButton;
-        }
-        if (indexPath.row == 1) {
-            cell.textLabel.text = @"Hide More Actions Button";
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            UISwitch* hideShortsMoreActionsButton = [[UISwitch alloc] initWithFrame:CGRectZero];
-            [hideShortsMoreActionsButton addTarget:self
-                                            action:@selector(toggleHideShortsMoreActionsButton:)
-                                  forControlEvents:UIControlEventValueChanged];
-            hideShortsMoreActionsButton.on =
-                [[NSUserDefaults standardUserDefaults] boolForKey:@"kHideShortsMoreActionsButton"];
-            cell.accessoryView = hideShortsMoreActionsButton;
-        }
-        if (indexPath.row == 2) {
-            cell.textLabel.text = @"Hide Like Button";
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            UISwitch* hideShortsLikeButton = [[UISwitch alloc] initWithFrame:CGRectZero];
-            [hideShortsLikeButton addTarget:self
-                                     action:@selector(toggleHideShortsLikeButton:)
-                           forControlEvents:UIControlEventValueChanged];
-            hideShortsLikeButton.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kHideShortsLikeButton"];
-            cell.accessoryView = hideShortsLikeButton;
-        }
-        if (indexPath.row == 3) {
-            cell.textLabel.text = @"Hide Dislike Button";
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            UISwitch* hideShortsDislikeButton = [[UISwitch alloc] initWithFrame:CGRectZero];
-            [hideShortsDislikeButton addTarget:self
-                                        action:@selector(toggleHideShortsDislikeButton:)
-                              forControlEvents:UIControlEventValueChanged];
-            hideShortsDislikeButton.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kHideShortsDislikeButton"];
-            cell.accessoryView = hideShortsDislikeButton;
-        }
-        if (indexPath.row == 4) {
-            cell.textLabel.text = @"Hide Comments Button";
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            UISwitch* hideShortsCommentsButton = [[UISwitch alloc] initWithFrame:CGRectZero];
-            [hideShortsCommentsButton addTarget:self
-                                         action:@selector(toggleHideShortsCommentsButton:)
-                               forControlEvents:UIControlEventValueChanged];
-            hideShortsCommentsButton.on =
-                [[NSUserDefaults standardUserDefaults] boolForKey:@"kHideShortsCommentsButton"];
-            cell.accessoryView = hideShortsCommentsButton;
-        }
-        if (indexPath.row == 5) {
-            cell.textLabel.text = @"Hide Share Button";
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            UISwitch* hideShortsShareButton = [[UISwitch alloc] initWithFrame:CGRectZero];
-            [hideShortsShareButton addTarget:self
-                                      action:@selector(toggleHideShortsShareButton:)
-                            forControlEvents:UIControlEventValueChanged];
-            hideShortsShareButton.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kHideShortsShareButton"];
-            cell.accessoryView = hideShortsShareButton;
-        }
+        NSArray* titles = @[
+            @"Hide Camera Button",
+            @"Hide More Actions Button",
+            @"Hide Like Button",
+            @"Hide Dislike Button",
+            @"Hide Comments Button",
+            @"Hide Share Button",
+        ];
+        NSArray* titlesNames = @[
+            @"kHideShortsCameraButton",
+            @"kHideShortsMoreActionsButton",
+            @"kHideShortsLikeButton",
+            @"kHideShortsDislikeButton",
+            @"kHideShortsCommentsButton",
+            @"kHideShortsShareButton",
+        ];
+        cell.textLabel.text = titles[indexPath.row];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        UISwitch* toggleSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
+        [toggleSwitch addTarget:self action:@selector(switchToggled:) forControlEvents:UIControlEventValueChanged];
+        toggleSwitch.on = [[NSUserDefaults standardUserDefaults] boolForKey:titlesNames[indexPath.row]];
+        cell.accessoryView = toggleSwitch;
     }
     return cell;
 }
@@ -143,64 +103,19 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
     [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)toggleHideShortsCameraButton:(UISwitch*)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kHideShortsCameraButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kHideShortsCameraButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
-}
-
-- (void)toggleHideShortsMoreActionsButton:(UISwitch*)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kHideShortsMoreActionsButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kHideShortsMoreActionsButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
-}
-
-- (void)toggleHideShortsLikeButton:(UISwitch*)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kHideShortsLikeButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kHideShortsLikeButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
-}
-
-- (void)toggleHideShortsDislikeButton:(UISwitch*)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kHideShortsDislikeButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kHideShortsDislikeButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
-}
-
-- (void)toggleHideShortsCommentsButton:(UISwitch*)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kHideShortsCommentsButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kHideShortsCommentsButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
-}
-
-- (void)toggleHideShortsShareButton:(UISwitch*)sender {
-    if ([sender isOn]) {
-        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kHideShortsShareButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    } else {
-        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kHideShortsShareButton"];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+- (void)switchToggled:(UISwitch*)sender {
+    UITableViewCell* cell = (UITableViewCell*)sender.superview;
+    NSIndexPath* indexPath = [self.tableView indexPathForCell:cell];
+    NSArray* titlesNames = @[
+        @"kHideShortsCameraButton",
+        @"kHideShortsMoreActionsButton",
+        @"kHideShortsLikeButton",
+        @"kHideShortsDislikeButton",
+        @"kHideShortsCommentsButton",
+        @"kHideShortsShareButton",
+    ];
+    [[NSUserDefaults standardUserDefaults] setBool:[sender isOn] forKey:titlesNames[indexPath.row]];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 @end
