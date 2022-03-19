@@ -20,6 +20,7 @@ jobs:
           echo TERM=xterm >> $GITHUB_ENV
           echo PKGNAME=$(grep '^Package:' control | cut -d' ' -f2-) >> $GITHUB_ENV
           echo PKGVER=$(grep '^Version:' control | cut -d' ' -f2-) >> $GITHUB_ENV
+          echo PKGARCH=$(grep '^Architecture:' control | cut -d' ' -f2-) >> $GITHUB_ENV
           set -o pipefail
           mkdir -p out
       -
@@ -42,10 +43,10 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: RELEASE
-          path: out/${{ env.PKGNAME }}_${{ env.PKGVER }}_iphoneos-arm.deb
+          path: out/${{ env.PKGNAME }}_${{ env.PKGVER }}_${{ env.PKGARCH }}.deb
       -
         name: Upload artifacts (debug)
         uses: actions/upload-artifact@v3
         with:
           name: DEBUG
-          path: out/${{ env.PKGNAME }}_${{ env.PKGVER }}-*+debug_iphoneos-arm.deb
+          path: out/${{ env.PKGNAME }}_${{ env.PKGVER }}-debug.*+git*_${{ env.PKGARCH }}.deb
