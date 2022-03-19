@@ -18,12 +18,10 @@ jobs:
         name: Setup build environment
         run: |
           echo TERM=xterm >> $GITHUB_ENV
-          echo PKGNAME=$(grep 'Package:' control | cut -d' ' -f2) >> $GITHUB_ENV
-          echo PKGVER=$(grep 'Version:' control | cut -d' ' -f2) >> $GITHUB_ENV
+          echo PKGNAME=$(grep '^Package:' control | cut -d' ' -f2-) >> $GITHUB_ENV
+          echo PKGVER=$(grep '^Version:' control | cut -d' ' -f2-) >> $GITHUB_ENV
           set -o pipefail
           mkdir -p out
-
-
       -
         name: Build (release)
         run: |
@@ -34,6 +32,9 @@ jobs:
         name: Build (debug)
         run: |
           gmake clean 2>&1 | grep -Ev --line-buffered 'getcwd|descriptor'
+
+          mkdir -p .theos/packages
+          echo $(( $GITHUB_RUN_NUMBER - 1 )) > .theos/packages/$PKGNAME-$PKGVER
           gmake package FINALPACKAGE=0 DEBUG=1 2>&1 | grep -Ev --line-buffered 'getcwd|descriptor'
           mv packages/* out/
       -

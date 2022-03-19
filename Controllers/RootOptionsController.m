@@ -421,7 +421,7 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
 
 - (NSString*)tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section {
     if (section == 4) {
-        return @"Version: 3.0.0 (Beta)";
+        return @"Version: @YOUTUBE_REBORN_VERSION@";
     }
     return nil;
 }
