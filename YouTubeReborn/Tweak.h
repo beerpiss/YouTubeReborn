@@ -41,20 +41,12 @@
 - (void)didSeekToTime:(CGFloat)time toleranceBefore:(CGFloat)before toleranceAfter:(CGFloat)after;
 @end
 
-@interface YTUserDefaults : NSObject
-- (long long)appThemeSetting;
-@end
-
 @interface YTWatchController : NSObject
 - (void)showFullScreen;
 @end
 
 @interface YTPivotBarViewController : UIViewController
 - (void)selectItemWithPivotIdentifier:(id)pivotIndentifier;
-@end
-
-@interface YTWrapperView : UIView
-- (void)rootOptionsAction:(id)sender;
 @end
 
 @interface YTIShareTargetServiceUpdateRenderer
