@@ -1,6 +1,8 @@
 #import "RebornSettingsController.h"
+#import "../Extensions/UIAlertController+Window.h"
+
 #ifndef __IPHONE_15_0
-    #import "iOS15Fix.h"
+#import "iOS15Fix.h"
 #endif
 
 static int __isOSVersionAtLeast(int major, int minor, int patch) {
@@ -149,7 +151,32 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
         @"kHideRebornDWNButton",
         @"kHideRebornOPButton",
     ];
-    [[NSUserDefaults standardUserDefaults] setBool:[sender isOn] forKey:titlesNames[indexPath.row]];
+    // Reborn's PIP can only be used with Background Playback enabled
+    if ([titlesNames[indexPath.row] isEqualToString:@"kHideRebornPIPButton"] &&
+        ![[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableBackgroundPlayback"] && ![sender isOn]) {
+        UIAlertController* alertMenu =
+            [UIAlertController alertControllerWithTitle:@"Warning"
+                                                message:@"Reborn's Picture in Picture requires background playback to "
+                                                        @"be enabled.\n\nWould you like to enable it now?"
+                                         preferredStyle:UIAlertControllerStyleAlert];
+        [alertMenu addAction:[UIAlertAction actionWithTitle:@"Yes"
+                                                     style:UIAlertActionStyleDefault
+                                                   handler:^(UIAlertAction* action) {
+                                                       [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kEnableBackgroundPlayback"];
+                                                       [[NSUserDefaults standardUserDefaults] setBool:[sender isOn] forKey:titlesNames[indexPath.row]];
+                                                    }]];
+        [alertMenu addAction:[UIAlertAction actionWithTitle:@"No"
+                                                     style:UIAlertActionStyleCancel
+                                                   handler:^(UIAlertAction* action) {
+                                                       [sender setOn:YES animated:YES];
+                                                       [[NSUserDefaults standardUserDefaults] setBool:YES forKey:titlesNames[indexPath.row]];
+                                                   }]];
+        [alertMenu show];
+        
+    }
+    else {
+        [[NSUserDefaults standardUserDefaults] setBool:[sender isOn] forKey:titlesNames[indexPath.row]];
+    }
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
