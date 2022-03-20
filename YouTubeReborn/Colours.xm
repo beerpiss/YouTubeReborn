@@ -1,7 +1,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import <HBLog.h>
-#import <Colours.h>
+#import "Colours.h"
+#import "Settings.h"
 #import "../Extensions/UIColor+HexString.h"
 #import "../Extensions/NSString+HexColor.h"
 
@@ -322,10 +323,25 @@ UIColor* rebornCustomColor;
 
 %ctor {
     @autoreleasepool {
+        NSString* defaultColor;
+        long long ytDarkModeCheck = [ytThemeSettings appThemeSetting];
+        if (ytDarkModeCheck == 0 || ytDarkModeCheck == 1) {
+            if (UIScreen.mainScreen.traitCollection.userInterfaceStyle == UIUserInterfaceStyleLight) {
+                defaultColor = @"#FFFFFF";
+            } else {
+                defaultColor = @"#212121";
+            }
+        }
+        if (ytDarkModeCheck == 2) {
+            defaultColor = @"#FFFFFF";
+        }
+        if (ytDarkModeCheck == 3) {
+            defaultColor = @"#212121";
+        }
         NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
         [defaults registerDefaults:@{
             // Color options
-            @"kYTRebornColourOptionsV3" : @"",
+            @"kYTRebornColourOptionsV3" : defaultColor,
         }];
         
         // Transitioning from legacy colors
