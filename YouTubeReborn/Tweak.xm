@@ -868,7 +868,7 @@ int selectedTabIndex = 0;
             @"kUseNativeShareSheet" : @NO,
             // Video options
             @"kEnableNoVideoAds" : @YES,
-            @"kEnableBackgroundPlaybacck" : @NO,
+            @"kEnableBackgroundPlayback" : @NO,
             @"kAllowHDOnCellularData" : @NO,
             @"kAutoFullScreen" : @NO,
             @"kDisableVideoEndscreenPopups" : @NO,
