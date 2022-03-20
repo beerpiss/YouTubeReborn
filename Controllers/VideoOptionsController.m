@@ -48,7 +48,7 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
         case 0:
             return 10;
         case 1:
-            return 3;
+            return [[NSUserDefaults standardUserDefaults] boolForKey:@"kShowWhenVideoEnds"] ? 3 : 1;
         default:
             return 0;
     }

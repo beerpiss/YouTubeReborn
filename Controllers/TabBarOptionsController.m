@@ -167,8 +167,20 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
         @"kHideLibraryTab",
     ];
     [[NSUserDefaults standardUserDefaults] setBool:[sender isOn] forKey:titlesNames[indexPath.row]];
-    if ([titlesNames[indexPath.row] isEqualToString:@"kHideTabBar"])
-        [self.tableView reloadData];
+    if ([titlesNames[indexPath.row] isEqualToString:@"kHideTabBar"]) {
+        [self.tableView beginUpdates];
+        NSMutableArray* indexPaths = [NSMutableArray array];
+        for (int i = 1; i < [titlesNames count]; i++) {
+            [indexPaths addObject:[NSIndexPath indexPathForRow:i inSection:1]];
+        }
+        if ([sender isOn]) {
+            [self.tableView deleteRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationTop];
+        }
+        else {
+            [self.tableView insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationTop];
+        }
+        [self.tableView endUpdates];
+    }
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 @end
