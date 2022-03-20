@@ -114,7 +114,7 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
 }
 
 - (CGFloat)tableView:(UITableView*)tableView heightForHeaderInSection:(NSInteger)section {
-    if (section == 0 || section == 1) {
+    if (section == 1) {
         return 50;
     }
     return 0;

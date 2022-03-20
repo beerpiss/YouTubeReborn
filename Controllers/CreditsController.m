@@ -14,6 +14,10 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
 
 @implementation CreditsController
 
+- (id)init {
+    return [super initWithStyle:UITableViewStyleGrouped];
+}
+
 - (void)loadView {
     [super loadView];
 
@@ -34,6 +38,7 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
                                                                                 action:@selector(done)];
     self.navigationItem.rightBarButtonItem = doneButton;
 
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     if (@available(iOS 15.0, *)) {
         [self.tableView setSectionHeaderTopPadding:0.0f];
     }
@@ -45,7 +50,7 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
 
 - (NSInteger)tableView:(UITableView*)theTableView numberOfRowsInSection:(NSInteger)section {
     if (section == 0) {
-        return 1;
+        return 2;
     }
     if (section == 1) {
         return 15;
@@ -76,14 +81,12 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
             cell.backgroundColor = [UIColor colorWithRed:0.110 green:0.110 blue:0.118 alpha:1.0];
             cell.textLabel.textColor = [UIColor whiteColor];
         }
-        if (indexPath.section == 0) {
-            if (indexPath.row == 0) {
-                cell.textLabel.text = @"Lillie";
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            }
-        }
-        if (indexPath.section == 1) {
-            NSArray* titles = @[
+        NSArray* titles = @[
+            @[
+                @"Lillie",
+                @"beerpsi",
+            ],
+            @[
                 @"Drama_Binny",
                 @"cameren",
                 @"Capt Inc.",
@@ -99,27 +102,16 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
                 @"Sarah",
                 @"Sloopie",
                 @"Worf",
-            ];
-            cell.textLabel.text = titles[indexPath.row];
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        }
-        if (indexPath.section == 2) {
-            NSArray* titles = @[
+            ],
+            @[
                 @"Lillie",
                 @"Sarah H",
                 @"Zoey",
-            ];
-            cell.textLabel.text = titles[indexPath.row];
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        }
-        if (indexPath.section == 3) {
-            if (indexPath.row == 0) {
-                cell.textLabel.text = @"Alpha_Stream";
-                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            }
-        }
-        if (indexPath.section == 4) {
-            NSArray* titles = @[
+            ],
+            @[
+                @"Alpha_Stream",
+            ],
+            @[
                 @"Burnt Toast",
                 @"cameren",
                 @"Capt Inc.",
@@ -133,54 +125,37 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
                 @"Rick",
                 @"Swaggo",
                 @"tale",
-            ];
-            cell.textLabel.text = titles[indexPath.row];
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        }
+            ],
+        ];
+        cell.textLabel.text = titles[indexPath.section][indexPath.row];
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     return cell;
 }
 
 - (void)tableView:(UITableView*)theTableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
     [theTableView deselectRowAtIndexPath:indexPath animated:YES];
-    if (indexPath.section == 0) {
-        if (indexPath.row == 0) {
-            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://github.com/LillieWeeb001"]
-                                               options:@{}
-                                     completionHandler:nil];
-        }
-    }
-    if (indexPath.section == 1) {
-        NSArray* urls = @[
+    NSArray* urls = @[
+        @[
+            @"https://github.com/LillieWeeb001",
+            @"https://github.com/beerpiss",
+        ],
+        @[
             @"https://twitter.com/drama_binny", @"https://twitter.com/cameren0", @"https://github.com/captinc",
             @"https://twitter.com/nikoyagamer", @"https://github.com/Emy", @"https://twitter.com/eveiyneee",
             @"https://twitter.com/hmuy0608", @"https://twitter.com/imlans10", @"https://twitter.com/riscv64",
             @"https://twitter.com/PoomSmart", @"https://twitter.com/sahmoee", @"https://twitter.com/deluxe_rosie",
             @"https://twitter.com/Banaantje04", @"https://twitter.com/Sloooopie", @"https://github.com/Worf1337"
-        ];
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:urls[indexPath.row]]
-                                           options:@{}
-                                 completionHandler:nil];
-    }
-    if (indexPath.section == 2) {
-        NSArray* urls = @[
+        ],
+        @[
             @"https://github.com/LillieWeeb001",
             @"https://github.com/SarahH12099",
             @"https://twitter.com/smolzoey",
-        ];
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:urls[indexPath.row]]
-                                           options:@{}
-                                 completionHandler:nil];
-    }
-    if (indexPath.section == 3) {
-        if (indexPath.row == 0) {
-            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://twitter.com/Kutarin_"]
-                                               options:@{}
-                                     completionHandler:nil];
-        }
-    }
-    if (indexPath.section == 4) {
-        NSArray* urls = @[
+        ],
+        @[
+            @"https://twitter.com/Kutarin_",
+        ],
+        @[
             @"https://twitter.com/btoastt",
             @"https://twitter.com/cameren0",
             @"https://github.com/captinc",
@@ -194,41 +169,22 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
             @"https://twitter.com/sahmoee",
             @"https://twitter.com/Swaggggggo",
             @"https://twitter.com/aarnavtale",
-        ];
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:urls[indexPath.row]]
-                                           options:@{}
-                                 completionHandler:nil];
-    }
+        ],
+    ];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:urls[indexPath.section][indexPath.row]]
+                                       options:@{}
+                             completionHandler:nil];
 }
 
 - (NSString*)tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section {
-    if (section == 0) {
-        return @"Developers";
-    }
-    if (section == 1) {
-        return @"Special Thanks";
-    }
-    if (section == 2) {
-        return @"Developers (v2)";
-    }
-    if (section == 3) {
-        return @"Icon Designer (v2)";
-    }
-    if (section == 4) {
-        return @"Special Thanks (v2)";
-    }
-    return nil;
-}
-
-- (void)tableView:(UITableView*)tableView willDisplayHeaderView:(UIView*)view forSection:(NSInteger)section {
-    if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleLight) {
-        view.tintColor = [UIColor colorWithRed:0.949 green:0.949 blue:0.969 alpha:1.0];
-    } else {
-        view.tintColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:1.0];
-    }
-    UITableViewHeaderFooterView* header = (UITableViewHeaderFooterView*)view;
-    [header.textLabel setTextColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"tableSection"]]];
-    [header.textLabel setFont:[UIFont systemFontOfSize:14]];
+    NSArray* sections = @[
+        @"Developers",
+        @"Special Thanks",
+        @"Developers (v2)",
+        @"Icon Designer (v2)",
+        @"Special Thanks (v2)",
+    ];
+    return sections[section];
 }
 
 - (CGFloat)tableView:(UITableView*)tableView heightForHeaderInSection:(NSInteger)section {

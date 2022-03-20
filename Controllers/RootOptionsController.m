@@ -26,6 +26,10 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
 
 @implementation RootOptionsController
 
+- (id)init {
+    return [super initWithStyle:UITableViewStyleGrouped];
+}
+
 - (void)loadView {
     [super loadView];
 
@@ -270,6 +274,26 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
     }
 }
 
+- (NSString*)tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section {
+    NSArray* sections = @[
+        @"Downloads",
+        @"Options",
+        @"General Preferences",
+        @"Others",
+    ];
+    if (section > 0) {
+        return sections[section-1];
+    }
+    else return nil;
+}
+
+- (CGFloat)tableView:(UITableView*)tableView heightForHeaderInSection:(NSInteger)section {
+    if (section == 1 || section == 2 || section == 3 || section == 4) {
+        return 40;
+    }
+    return 0;
+}
+
 - (NSString*)tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section {
     if (section == 4) {
         return @"Version: @YOUTUBE_REBORN_VERSION@";
@@ -277,26 +301,8 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
     return nil;
 }
 
-- (UIView*)tableView:(UITableView*)tableView viewForHeaderInSection:(NSInteger)section {
-    return [UIView new];
-}
-
-- (CGFloat)tableView:(UITableView*)tableView heightForHeaderInSection:(NSInteger)section {
-    if (section == 0 || section == 1 || section == 2 || section == 4) {
-        return 50;
-    }
-    return 0;
-}
-
 - (void)tableView:(UITableView*)tableView willDisplayFooterView:(UIView*)view forSection:(NSInteger)section {
-    if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleLight) {
-        view.tintColor = [UIColor colorWithRed:0.949 green:0.949 blue:0.969 alpha:1.0];
-    } else {
-        view.tintColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:1.0];
-    }
     UITableViewHeaderFooterView* footer = (UITableViewHeaderFooterView*)view;
-    [footer.textLabel setTextColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"tableSection"]]];
-    [footer.textLabel setFont:[UIFont systemFontOfSize:14]];
     footer.textLabel.textAlignment = NSTextAlignmentCenter;
 }
 
