@@ -69,13 +69,13 @@ NSURL* pipURL;
                 _overlayButtonsY = 24;
             }
         }
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideRebornDWNButton"] == NO) {
+        if (![[NSUserDefaults standardUserDefaults] boolForKey:@"kHideRebornDWNButton"]) {
             [_overlayButtons addObject:@"DWN"];
         }
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideRebornOPButton"] == NO) {
+        if (![[NSUserDefaults standardUserDefaults] boolForKey:@"kHideRebornOPButton"]) {
             [_overlayButtons addObject:@"OP"];
         }
-        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"kHideRebornPIPButton"] == NO) {
+        if (![[NSUserDefaults standardUserDefaults] boolForKey:@"kHideRebornPIPButton"]) {
             [_overlayButtons addObject:@"PIP"];
         }
         int _overlayButtonsCount = [_overlayButtons count];
@@ -193,7 +193,7 @@ NSURL* pipURL;
                        UIAlertController* alertMenu =
                            [UIAlertController alertControllerWithTitle:@"Options"
                                                                message:nil
-                                                        preferredStyle:UIAlertControllerStyleAlert];
+                                                        preferredStyle:UIAlertControllerStyleActionSheet];
 
                        [alertMenu
                            addAction:[UIAlertAction
@@ -229,7 +229,7 @@ NSURL* pipURL;
                                                  }]];
 
                        [alertMenu addAction:[UIAlertAction actionWithTitle:@"Cancel"
-                                                                     style:UIAlertActionStyleDefault
+                                                                     style:UIAlertActionStyleCancel
                                                                    handler:^(UIAlertAction* action){
                                                                    }]];
 
@@ -241,7 +241,7 @@ NSURL* pipURL;
                                                                message:@"This video is not supported by Infuse or VLC"
                                                         preferredStyle:UIAlertControllerStyleAlert];
 
-                       [alertFailed addAction:[UIAlertAction actionWithTitle:@"Okay"
+                       [alertFailed addAction:[UIAlertAction actionWithTitle:@"OK"
                                                                        style:UIAlertActionStyleDefault
                                                                      handler:^(UIAlertAction* action){
                                                                      }]];
@@ -252,10 +252,10 @@ NSURL* pipURL;
                } else {
                    UIAlertController* alertError =
                        [UIAlertController alertControllerWithTitle:@"Notice"
-                                                           message:@"Unable to fetch youtube video url from googles api"
+                                                           message:@"Unable to fetch video URL"
                                                     preferredStyle:UIAlertControllerStyleAlert];
 
-                   [alertError addAction:[UIAlertAction actionWithTitle:@"Okay"
+                   [alertError addAction:[UIAlertAction actionWithTitle:@"OK"
                                                                   style:UIAlertActionStyleDefault
                                                                 handler:^(UIAlertAction* action){
                                                                 }]];
@@ -276,7 +276,7 @@ NSURL* pipURL;
 
     UIAlertController* alertMenu = [UIAlertController alertControllerWithTitle:@"Options"
                                                                        message:nil
-                                                                preferredStyle:UIAlertControllerStyleAlert];
+                                                                preferredStyle:UIAlertControllerStyleActionSheet];
 
     [alertMenu addAction:[UIAlertAction actionWithTitle:@"Download Audio (M4A Audio)"
                                                   style:UIAlertActionStyleDefault
@@ -450,7 +450,7 @@ NSURL* pipURL;
                                                                message:@"This video is not supported by the downloader"
                                                         preferredStyle:UIAlertControllerStyleAlert];
 
-                       [alertFailed addAction:[UIAlertAction actionWithTitle:@"Okay"
+                       [alertFailed addAction:[UIAlertAction actionWithTitle:@"OK"
                                                                        style:UIAlertActionStyleDefault
                                                                      handler:^(UIAlertAction* action){
                                                                      }]];
@@ -461,10 +461,10 @@ NSURL* pipURL;
                } else {
                    UIAlertController* alertUrlError =
                        [UIAlertController alertControllerWithTitle:@"Notice"
-                                                           message:@"Unable to fetch youtube video url from googles api"
+                                                           message:@"Unable to fetch video URL"
                                                     preferredStyle:UIAlertControllerStyleAlert];
 
-                   [alertUrlError addAction:[UIAlertAction actionWithTitle:@"Okay"
+                   [alertUrlError addAction:[UIAlertAction actionWithTitle:@"OK"
                                                                      style:UIAlertActionStyleDefault
                                                                    handler:^(UIAlertAction* action){
                                                                    }]];
@@ -599,7 +599,7 @@ NSURL* pipURL;
                                                                message:@"This video is not supported by the downloader"
                                                         preferredStyle:UIAlertControllerStyleAlert];
 
-                       [alertFailed addAction:[UIAlertAction actionWithTitle:@"Okay"
+                       [alertFailed addAction:[UIAlertAction actionWithTitle:@"OK"
                                                                        style:UIAlertActionStyleDefault
                                                                      handler:^(UIAlertAction* action){
                                                                      }]];
@@ -610,10 +610,10 @@ NSURL* pipURL;
                } else {
                    UIAlertController* alertUrlError =
                        [UIAlertController alertControllerWithTitle:@"Notice"
-                                                           message:@"Unable to fetch youtube video url from googles api"
+                                                           message:@"Unable to fetch video URL"
                                                     preferredStyle:UIAlertControllerStyleAlert];
 
-                   [alertUrlError addAction:[UIAlertAction actionWithTitle:@"Okay"
+                   [alertUrlError addAction:[UIAlertAction actionWithTitle:@"Ok"
                                                                      style:UIAlertActionStyleDefault
                                                                    handler:^(UIAlertAction* action){
                                                                    }]];
@@ -658,7 +658,7 @@ NSURL* pipURL;
                        } else {
                            UIAlertController* alertPip = [UIAlertController
                                alertControllerWithTitle:@"Notice"
-                                                message:@"This video is not supported by the Picture-In-Picture"
+                                                message:@"This video is not supported by Picture-In-Picture"
                                          preferredStyle:UIAlertControllerStyleAlert];
 
                            [alertPip addAction:[UIAlertAction actionWithTitle:@"Okay"
@@ -672,7 +672,7 @@ NSURL* pipURL;
                    } else {
                        UIAlertController* alertPip = [UIAlertController
                            alertControllerWithTitle:@"Notice"
-                                            message:@"Unable to fetch youtube video url from googles api"
+                                            message:@"Unable to fetch video URL"
                                      preferredStyle:UIAlertControllerStyleAlert];
 
                        [alertPip addAction:[UIAlertAction actionWithTitle:@"Okay"
