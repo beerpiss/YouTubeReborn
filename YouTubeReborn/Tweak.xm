@@ -898,8 +898,6 @@ int selectedTabIndex = 0;
             @"kHideUploadTab" : @NO,
             @"kHideSubscriptionsTab" : @NO,
             @"kHideLibraryTab" : @NO,
-            // Color options
-            @"kYTRebornColourOptionsVTwo" : [NSData data],
             // Search options
             @"kEnableEnhancedSearchBar" : @NO,
             @"kDisableVoiceSearch" : @NO,

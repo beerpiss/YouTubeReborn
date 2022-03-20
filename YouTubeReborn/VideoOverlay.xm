@@ -6,7 +6,7 @@
 #import <UIKit/UIKit.h>
 #import <XCDYouTubeKit/XCDYouTubeKit.h>
 #import "../Controllers/PictureInPictureController.h"
-#import "Tweak.h"
+#import "VideoOverlay.h"
 
 static NSString* const YTApiKey = @"AIzaSyCGZHGUPP9wojQDfrwPEr7Pr-mhBanHAb8";
 
