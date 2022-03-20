@@ -8,28 +8,30 @@ YouTubeReborn_CFLAGS = -fobjc-arc
 YouTubeReborn_FRAMEWORKS = UIKit Foundation AVFoundation AVKit
 YouTubeReborn_PRIVATE_FRAMEWORKS = MediaRemote
 ARCHS = arm64 arm64e
+THEOS_PLATFORM_DEB_COMPRESSION_TYPE = lzma
+THEOS_PLATFORM_DEB_COMPRESSION_LEVEL = 9
 
 include $(THEOS)/makefiles/common.mk
 include $(THEOS)/makefiles/package.mk
-
-# Switch to dpkg-deb if it exists in PATH
-THEOS_PLATFORM_DEB_COMPRESSION_TYPE := xz
+# Switch to dpkg-deb if it exists in PATH and we're not doing lzma
 ifeq ($(shell type dpkg-deb >/dev/null 2>&1 && echo 1),1)
-	_THEOS_PLATFORM_DPKG_DEB := dpkg-deb
+ifneq ($(THEOS_PLATFORM_DEB_COMPRESSION_TYPE),lzma)
+	_THEOS_PLATFORM_DPKG_DEB = dpkg-deb
+endif
 endif
 
 # Git-based versioning
 # If not a git repo (downloaded tarball etc.), use version from control file
 # If git repo:
 # - If on tag, use version from control file
-# - If not on tag, use version from control file with added git manfest
+# - If not on tag, use version from tag/control file with added git manfest
 #	- Release version is $(PACKAGE_VERSION)+git$(GIT_DATE).$(GIT_COMMIT_HASH)
 #	- Debug version is $(PACKAGE_VERSION)-debug.$(_DEBUG_NUMBER)+git$(GIT_DATE).$(GIT_COMMIT_HASH)
 # $(_DEBUG_NUMBER) is incremental.
 ifeq ($(shell git rev-parse --is-inside-work-tree),true)
 ifeq ($(shell git name-rev --name-only --tags HEAD),undefined)  
 	_PACKAGE_NAME := $(shell grep '^Package:' $(_THEOS_DEB_PACKAGE_CONTROL_PATH) | cut -d' ' -f2-)
-	_PACKAGE_VERSION := $(or $(shell git describe --tags --abbrev=0 | sed -r 's/^(v|V)//g'),$(shell grep '^Version:' $(_THEOS_DEB_PACKAGE_CONTROL_PATH) | cut -d' ' -f2-))
+	_PACKAGE_VERSION := $(or $(shell git describe --tags --match 'v[0-9]*' --abbrev=0 | sed -r 's/^(v|V)//g'),$(shell grep '^Version:' $(_THEOS_DEB_PACKAGE_CONTROL_PATH) | cut -d' ' -f2-))
 	_GIT_DATE := $(shell git show -s --format=%cs | tr -d "-")
 	_GIT_COMMIT_HASH := $(shell git rev-parse --short HEAD)
 	THEOS_PACKAGE_BASE_VERSION := $(_PACKAGE_VERSION)+git$(_GIT_DATE).$(_GIT_COMMIT_HASH)
