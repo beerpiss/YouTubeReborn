@@ -46,7 +46,7 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
 }
 
 - (NSInteger)tableView:(UITableView*)theTableView numberOfRowsInSection:(NSInteger)section {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableEnhancedSearchBar"] ? 1 : 2;
+    return 2;
 }
 
 - (UITableViewCell*)tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath {
@@ -105,17 +105,6 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
         @"kDisableVoiceSearch",
     ];
     [[NSUserDefaults standardUserDefaults] setBool:[sender isOn] forKey:titlesNames[indexPath.row]];
-    if ([titlesNames[indexPath.row] isEqualToString:@"kEnableEnhancedSearchBar"]) {
-        [self.tableView beginUpdates];
-        NSArray* indexPaths = @[[NSIndexPath indexPathForRow:1 inSection:0]];
-        if ([sender isOn]) {
-            [self.tableView deleteRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationTop];
-        }
-        else {
-            [self.tableView insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationTop];
-        }
-        [self.tableView endUpdates];
-    }
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 

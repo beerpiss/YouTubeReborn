@@ -230,6 +230,13 @@
     %orig;
 }
 %end
+%hook YTSearchViewController
+- (void)viewDidLoad {
+    %orig();
+    MSHookIvar<UIButton*>(self, "_voiceButton").enabled = NO;
+    MSHookIvar<UIButton*>(self, "_voiceButton").frame = CGRectMake(0, 0, 0, 0);
+}
+%end
 %end
 
 %group gDisableHints
