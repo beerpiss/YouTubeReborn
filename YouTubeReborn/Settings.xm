@@ -1,7 +1,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import "../Controllers/RootOptionsController.h"
-#import "Tweak.h"
+#import "../Extensions/UIColor+HexString.h"
+#import "Settings.h"
 
 YTUserDefaults* ytThemeSettings;
 
@@ -24,10 +25,10 @@ YTUserDefaults* ytThemeSettings;
 
         UIView* rebornView = [[UIView alloc] initWithFrame:CGRectMake(0, 10, childView.bounds.size.width, 51)];
         [rebornView setUserInteractionEnabled:YES];
-        rebornView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.0];
+        rebornView.backgroundColor = [UIColor rebornColorFromHexString:[[NSUserDefaults standardUserDefaults] stringForKey:@"kYTRebornColourOptionsV3"]];
 
         UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(16, 0, rebornView.frame.size.width, 51)];
-        label.text = @"YT Reborn Settings";
+        label.text = @"YouTube Reborn settings";
         if (ytDarkModeCheck == 0 || ytDarkModeCheck == 1) {
             if (UIScreen.mainScreen.traitCollection.userInterfaceStyle == UIUserInterfaceStyleLight) {
                 label.textColor = [UIColor blackColor];
