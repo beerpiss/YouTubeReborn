@@ -137,14 +137,6 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
     return 10;
 }
 
-- (CGFloat)tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath {
-    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"kShowWhenVideoEnds"] && indexPath.section == 1 &&
-        indexPath.row >= 1) {
-        return (CGFloat)0.0;
-    } else
-        return UITableViewAutomaticDimension;
-}
-
 @end
 
 @implementation VideoOptionsController (Privates)
@@ -178,6 +170,13 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
     [[NSUserDefaults standardUserDefaults] setBool:[sender isOn] forKey:titlesNames[indexPath.section][indexPath.row]];
     if ([titlesNames[indexPath.section][indexPath.row] isEqualToString:@"kShowWhenVideoEnds"]) {
         [self.tableView beginUpdates];
+        NSArray* indexPaths = @[[NSIndexPath indexPathForRow:1 inSection:1], [NSIndexPath indexPathForRow:2 inSection:1]];
+        if (![sender isOn]) {
+            [self.tableView deleteRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationTop];
+        }
+        else {
+            [self.tableView insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationTop];
+        }
         [self.tableView endUpdates];
     }
     [[NSUserDefaults standardUserDefaults] synchronize];
