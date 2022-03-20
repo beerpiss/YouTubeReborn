@@ -48,7 +48,7 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
         case 0:
             return 10;
         case 1:
-            return [[NSUserDefaults standardUserDefaults] boolForKey:@"kShowWhenVideoEnds"] ? 3 : 1;
+            return 3;
         default:
             return 0;
     }
@@ -69,10 +69,8 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
             cell.textLabel.textColor = [UIColor whiteColor];
         }
 
-        NSArray* titles;
-        NSArray* titlesNames;
-        if (indexPath.section == 0) {
-            titles = @[
+        NSArray* titles = @[
+            @[
                 @"Enable No Ads (Video/Home screen)",
                 @"Enable Background Playback",
                 @"Allow HD On Cellular Data",
@@ -83,8 +81,15 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
                 @"Disable Double Tap To Skip",
                 @"Hide Channel Watermark",
                 @"Always Show Player Bar",
-            ];
-            titlesNames = @[
+            ],
+            @[
+                @"Show When Video Ends",
+                @"Show Seconds",
+                @"Use 24 Hour Clock",
+            ],
+        ];
+        NSArray* titlesNames = @[
+            @[
                 @"kEnableNoVideoAds",
                 @"kEnableBackgroundPlayback",
                 @"kAllowHDOnCellularData",
@@ -95,24 +100,19 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
                 @"kDisableDoubleTapToSkip",
                 @"kHideChannelWatermark",
                 @"kAlwaysShowPlayerBar",
-            ];
-        } else if (indexPath.section == 1) {
-            titles = @[
-                @"Show When Video Ends",
-                @"Show Seconds",
-                @"Use 24 Hour Clock",
-            ];
-            titlesNames = @[
+            ],
+            @[
                 @"kShowWhenVideoEnds",
                 @"kShowSeconds",
                 @"kUse24HourClock",
-            ];
-        }
-        cell.textLabel.text = titles[indexPath.row];
+            ],
+        ];
+        cell.textLabel.text = titles[indexPath.section][indexPath.row];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         UISwitch* toggleSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
         [toggleSwitch addTarget:self action:@selector(switchToggled:) forControlEvents:UIControlEventValueChanged];
-        toggleSwitch.on = [[NSUserDefaults standardUserDefaults] boolForKey:titlesNames[indexPath.row]];
+        toggleSwitch.on =
+            [[NSUserDefaults standardUserDefaults] boolForKey:titlesNames[indexPath.section][indexPath.row]];
         cell.accessoryView = toggleSwitch;
     }
     return cell;
@@ -137,6 +137,14 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
     return 10;
 }
 
+- (CGFloat)tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath {
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"kShowWhenVideoEnds"] && indexPath.section == 1 &&
+        indexPath.row >= 1) {
+        return (CGFloat)0.0;
+    } else
+        return UITableViewAutomaticDimension;
+}
+
 @end
 
 @implementation VideoOptionsController (Privates)
@@ -148,30 +156,30 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
 - (void)switchToggled:(UISwitch*)sender {
     UITableViewCell* cell = (UITableViewCell*)sender.superview;
     NSIndexPath* indexPath = [self.tableView indexPathForCell:cell];
-    NSArray* titlesNames;
-    if (indexPath.section == 0) {
-        titlesNames = @[
+    NSArray* titlesNames = @[
+        @[
             @"kEnableNoVideoAds",
             @"kEnableBackgroundPlayback",
             @"kAllowHDOnCellularData",
-            @"kAutoFullscreen",
+            @"kAutoFullScreen",
             @"kDisableVideoEndscreenPopups",
             @"kDisableVideoInfoCards",
             @"kDisableVideoAutoPlay",
             @"kDisableDoubleTapToSkip",
             @"kHideChannelWatermark",
             @"kAlwaysShowPlayerBar",
-        ];
-    } else if (indexPath.section == 1) {
-        titlesNames = @[
+        ],
+        @[
             @"kShowWhenVideoEnds",
             @"kShowSeconds",
             @"kUse24HourClock",
-        ];
+        ],
+    ];
+    [[NSUserDefaults standardUserDefaults] setBool:[sender isOn] forKey:titlesNames[indexPath.section][indexPath.row]];
+    if ([titlesNames[indexPath.section][indexPath.row] isEqualToString:@"kShowWhenVideoEnds"]) {
+        [self.tableView beginUpdates];
+        [self.tableView endUpdates];
     }
-    [[NSUserDefaults standardUserDefaults] setBool:[sender isOn] forKey:titlesNames[indexPath.row]];
-    if ([titlesNames[indexPath.row] isEqualToString:@"kShowWhenVideoEnds"])
-        [self.tableView reloadData];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 @end
