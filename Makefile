@@ -14,6 +14,7 @@ THEOS_PLATFORM_DEB_COMPRESSION_LEVEL = 9
 
 ifneq (,$(findstring jailed,$(MODULES)))
 	$(TWEAK_NAME)_IPA ?= /path/to/ipa
+	RESOURCES_DIR := .resources
 	DISPLAY_NAME ?= YouTubeReborn
 	BUNDLE_ID ?= com.google.ios.youtube
 	CODESIGN_IPA ?= 0
