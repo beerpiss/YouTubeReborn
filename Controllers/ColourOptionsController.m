@@ -1,4 +1,6 @@
 #import "ColourOptionsController.h"
+#import "../Extensions/NSString+HexColor.h"
+#import "../Extensions/UIColor+HexString.h"
 
 @interface ColourOptionsController ()
 @end
@@ -32,10 +34,7 @@
     self.navigationItem.rightBarButtonItem = saveButton;
 
     self.supportsAlpha = NO;
-    NSData* colorData = [[NSUserDefaults standardUserDefaults] objectForKey:@"kYTRebornColourOptionsVTwo"];
-    NSKeyedUnarchiver* unarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:colorData error:nil];
-    [unarchiver setRequiresSecureCoding:NO];
-    UIColor* color = [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
+    UIColor* color = [UIColor rebornColorFromHexString:[[NSUserDefaults standardUserDefaults] stringForKey:@"kYTRebornColourOptionsV3"]];
     self.selectedColor = color;
 }
 
@@ -48,17 +47,14 @@
 }
 
 - (void)save {
-    NSData* colorData = [NSKeyedArchiver archivedDataWithRootObject:self.selectedColor
-                                              requiringSecureCoding:nil
-                                                              error:nil];
-    [[NSUserDefaults standardUserDefaults] setObject:colorData forKey:@"kYTRebornColourOptionsVTwo"];
+    [[NSUserDefaults standardUserDefaults] setObject:[NSString hexStringFromColor:self.selectedColor] forKey:@"kYTRebornColourOptionsV3"];
     [[NSUserDefaults standardUserDefaults] synchronize];
 
     UIAlertController* alertSaved = [UIAlertController alertControllerWithTitle:@"Colour Saved"
                                                                         message:nil
                                                                  preferredStyle:UIAlertControllerStyleAlert];
 
-    [alertSaved addAction:[UIAlertAction actionWithTitle:@"Okay"
+    [alertSaved addAction:[UIAlertAction actionWithTitle:@"OK"
                                                    style:UIAlertActionStyleCancel
                                                  handler:^(UIAlertAction* _Nonnull action){
                                                  }]];
