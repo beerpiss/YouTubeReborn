@@ -1,8 +1,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-@interface NSString(HexColor)
+@interface NSString (HexColor)
 
-+ (NSString *)hexStringFromColor:(UIColor *)color;
++ (NSString*)hexStringFromColor:(UIColor*)color;
 
 @end

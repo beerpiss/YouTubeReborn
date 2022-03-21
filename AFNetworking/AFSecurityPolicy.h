@@ -31,7 +31,9 @@ typedef NS_ENUM(NSUInteger, AFSSLPinningMode) {
 /**
  `AFSecurityPolicy` evaluates server trust against pinned X.509 certificates and public keys over secure connections.
 
- Adding pinned SSL certificates to your app helps prevent man-in-the-middle attacks and other vulnerabilities. Applications dealing with sensitive customer data or financial information are strongly encouraged to route all communication over an HTTPS connection with SSL pinning configured and enabled.
+ Adding pinned SSL certificates to your app helps prevent man-in-the-middle attacks and other vulnerabilities.
+ Applications dealing with sensitive customer data or financial information are strongly encouraged to route all
+ communication over an HTTPS connection with SSL pinning configured and enabled.
  */
 
 NS_ASSUME_NONNULL_BEGIN
@@ -39,46 +41,50 @@ NS_ASSUME_NONNULL_BEGIN
 @interface AFSecurityPolicy : NSObject <NSSecureCoding, NSCopying>
 
 /**
- The criteria by which server trust should be evaluated against the pinned SSL certificates. Defaults to `AFSSLPinningModeNone`.
+ The criteria by which server trust should be evaluated against the pinned SSL certificates. Defaults to
+ `AFSSLPinningModeNone`.
  */
-@property (readonly, nonatomic, assign) AFSSLPinningMode SSLPinningMode;
+@property(readonly, nonatomic, assign) AFSSLPinningMode SSLPinningMode;
 
 /**
- The certificates used to evaluate server trust according to the SSL pinning mode. 
- 
+ The certificates used to evaluate server trust according to the SSL pinning mode.
+
  Note that if pinning is enabled, `evaluateServerTrust:forDomain:` will return true if any pinned certificate matches.
 
  @see policyWithPinningMode:withPinnedCertificates:
  */
-@property (nonatomic, strong, nullable) NSSet <NSData *> *pinnedCertificates;
+@property(nonatomic, strong, nullable) NSSet<NSData*>* pinnedCertificates;
 
 /**
  Whether or not to trust servers with an invalid or expired SSL certificates. Defaults to `NO`.
  */
-@property (nonatomic, assign) BOOL allowInvalidCertificates;
+@property(nonatomic, assign) BOOL allowInvalidCertificates;
 
 /**
  Whether or not to validate the domain name in the certificate's CN field. Defaults to `YES`.
  */
-@property (nonatomic, assign) BOOL validatesDomainName;
+@property(nonatomic, assign) BOOL validatesDomainName;
 
 ///-----------------------------------------
 /// @name Getting Certificates from the Bundle
 ///-----------------------------------------
 
 /**
- Returns any certificates included in the bundle. If you are using AFNetworking as an embedded framework, you must use this method to find the certificates you have included in your app bundle, and use them when creating your security policy by calling `policyWithPinningMode:withPinnedCertificates`.
+ Returns any certificates included in the bundle. If you are using AFNetworking as an embedded framework, you must use
+ this method to find the certificates you have included in your app bundle, and use them when creating your security
+ policy by calling `policyWithPinningMode:withPinnedCertificates`.
 
  @return The certificates included in the given bundle.
  */
-+ (NSSet <NSData *> *)certificatesInBundle:(NSBundle *)bundle;
++ (NSSet<NSData*>*)certificatesInBundle:(NSBundle*)bundle;
 
 ///-----------------------------------------
 /// @name Getting Specific Security Policies
 ///-----------------------------------------
 
 /**
- Returns the shared default security policy, which does not allow invalid certificates, validates domain name, and does not validate against pinned certificates or public keys.
+ Returns the shared default security policy, which does not allow invalid certificates, validates domain name, and does
+ not validate against pinned certificates or public keys.
 
  @return The default security policy.
  */
@@ -90,8 +96,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  Creates and returns a security policy with the specified pinning mode.
- 
- Certificates with the `.cer` extension found in the main bundle will be pinned. If you want more control over which certificates are pinned, please use `policyWithPinningMode:withPinnedCertificates:` instead.
+
+ Certificates with the `.cer` extension found in the main bundle will be pinned. If you want more control over which
+ certificates are pinned, please use `policyWithPinningMode:withPinnedCertificates:` instead.
 
  @param pinningMode The SSL pinning mode.
 
@@ -112,7 +119,8 @@ NS_ASSUME_NONNULL_BEGIN
  @see +certificatesInBundle:
  @see -pinnedCertificates
 */
-+ (instancetype)policyWithPinningMode:(AFSSLPinningMode)pinningMode withPinnedCertificates:(NSSet <NSData *> *)pinnedCertificates;
++ (instancetype)policyWithPinningMode:(AFSSLPinningMode)pinningMode
+               withPinnedCertificates:(NSSet<NSData*>*)pinnedCertificates;
 
 ///------------------------------
 /// @name Evaluating Server Trust
@@ -128,8 +136,7 @@ NS_ASSUME_NONNULL_BEGIN
 
  @return Whether or not to trust the server.
  */
-- (BOOL)evaluateServerTrust:(SecTrustRef)serverTrust
-                  forDomain:(nullable NSString *)domain;
+- (BOOL)evaluateServerTrust:(SecTrustRef)serverTrust forDomain:(nullable NSString*)domain;
 
 @end
 

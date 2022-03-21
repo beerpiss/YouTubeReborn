@@ -670,10 +670,10 @@ NSURL* pipURL;
                            [pipViewController presentViewController:alertPip animated:YES completion:nil];
                        }
                    } else {
-                       UIAlertController* alertPip = [UIAlertController
-                           alertControllerWithTitle:@"Notice"
-                                            message:@"Unable to fetch video URL"
-                                     preferredStyle:UIAlertControllerStyleAlert];
+                       UIAlertController* alertPip =
+                           [UIAlertController alertControllerWithTitle:@"Notice"
+                                                               message:@"Unable to fetch video URL"
+                                                        preferredStyle:UIAlertControllerStyleAlert];
 
                        [alertPip addAction:[UIAlertAction actionWithTitle:@"Okay"
                                                                     style:UIAlertActionStyleCancel

@@ -159,22 +159,26 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
                                                 message:@"Reborn's Picture in Picture requires background playback to "
                                                         @"be enabled.\n\nWould you like to enable it now?"
                                          preferredStyle:UIAlertControllerStyleAlert];
-        [alertMenu addAction:[UIAlertAction actionWithTitle:@"Yes"
-                                                     style:UIAlertActionStyleDefault
-                                                   handler:^(UIAlertAction* action) {
-                                                       [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kEnableBackgroundPlayback"];
-                                                       [[NSUserDefaults standardUserDefaults] setBool:[sender isOn] forKey:titlesNames[indexPath.row]];
-                                                    }]];
+        [alertMenu addAction:[UIAlertAction
+                                 actionWithTitle:@"Yes"
+                                           style:UIAlertActionStyleDefault
+                                         handler:^(UIAlertAction* action) {
+                                           [[NSUserDefaults standardUserDefaults] setBool:YES
+                                                                                   forKey:@"kEnableBackgroundPlayback"];
+                                           [[NSUserDefaults standardUserDefaults] setBool:[sender isOn]
+                                                                                   forKey:titlesNames[indexPath.row]];
+                                         }]];
         [alertMenu addAction:[UIAlertAction actionWithTitle:@"No"
-                                                     style:UIAlertActionStyleCancel
-                                                   handler:^(UIAlertAction* action) {
-                                                       [sender setOn:YES animated:YES];
-                                                       [[NSUserDefaults standardUserDefaults] setBool:YES forKey:titlesNames[indexPath.row]];
-                                                   }]];
+                                                      style:UIAlertActionStyleCancel
+                                                    handler:^(UIAlertAction* action) {
+                                                      [sender setOn:YES animated:YES];
+                                                      [[NSUserDefaults standardUserDefaults]
+                                                          setBool:YES
+                                                           forKey:titlesNames[indexPath.row]];
+                                                    }]];
         [alertMenu show];
-        
-    }
-    else {
+
+    } else {
         [[NSUserDefaults standardUserDefaults] setBool:[sender isOn] forKey:titlesNames[indexPath.row]];
     }
     [[NSUserDefaults standardUserDefaults] synchronize];

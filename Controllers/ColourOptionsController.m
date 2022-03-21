@@ -34,7 +34,8 @@
     self.navigationItem.rightBarButtonItem = saveButton;
 
     self.supportsAlpha = NO;
-    UIColor* color = [UIColor rebornColorFromHexString:[[NSUserDefaults standardUserDefaults] stringForKey:@"kYTRebornColourOptionsV3"]];
+    UIColor* color = [UIColor
+        rebornColorFromHexString:[[NSUserDefaults standardUserDefaults] stringForKey:@"kYTRebornColourOptionsV3"]];
     self.selectedColor = color;
 }
 
@@ -47,7 +48,8 @@
 }
 
 - (void)save {
-    [[NSUserDefaults standardUserDefaults] setObject:[NSString hexStringFromColor:self.selectedColor] forKey:@"kYTRebornColourOptionsV3"];
+    [[NSUserDefaults standardUserDefaults] setObject:[NSString hexStringFromColor:self.selectedColor]
+                                              forKey:@"kYTRebornColourOptionsV3"];
     [[NSUserDefaults standardUserDefaults] synchronize];
 
     UIAlertController* alertSaved = [UIAlertController alertControllerWithTitle:@"Colour Saved"

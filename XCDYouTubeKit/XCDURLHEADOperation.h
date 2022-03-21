@@ -10,19 +10,20 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-__attribute__((visibility("hidden")))
-@interface XCDURLHEADOperation : NSOperation
+__attribute__((visibility("hidden"))) @interface XCDURLHEADOperation : NSOperation
 
-- (instancetype)initWithURL:(NSURL *)url info:(nullable NSDictionary *)info cookes:(nullable NSArray <NSHTTPCookie *> *)cookies;
+- (instancetype)initWithURL:(NSURL*)url
+                       info:(nullable NSDictionary*)info
+                     cookes:(nullable NSArray<NSHTTPCookie*>*)cookies;
 
-@property (atomic, strong, readonly) NSURL *url;
-@property (atomic, copy, readonly, nullable) NSDictionary *info;
-@property (atomic, copy, readonly, nullable) NSArray <NSHTTPCookie *> *cookies;
+@property(atomic, strong, readonly) NSURL* url;
+@property(atomic, copy, readonly, nullable) NSDictionary* info;
+@property(atomic, copy, readonly, nullable) NSArray<NSHTTPCookie*>* cookies;
 
-@property (atomic, readonly, nullable) NSData *data;
-@property (atomic, readonly, nullable) NSURLResponse *response;
+@property(atomic, readonly, nullable) NSData* data;
+@property(atomic, readonly, nullable) NSURLResponse* response;
 
-@property (atomic, readonly, nullable) NSError *error;
+@property(atomic, readonly, nullable) NSError* error;
 
 @end
 

@@ -1,6 +1,6 @@
 #import "TabBarOptionsController.h"
 #ifndef __IPHONE_15_0
-    #import "iOS15Fix.h"
+#import "iOS15Fix.h"
 #endif
 #import "StartupPageOptionsController.h"
 
@@ -177,8 +177,7 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
         }
         if ([sender isOn]) {
             [self.tableView deleteRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationTop];
-        }
-        else {
+        } else {
             [self.tableView insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationTop];
         }
         [self.tableView endUpdates];

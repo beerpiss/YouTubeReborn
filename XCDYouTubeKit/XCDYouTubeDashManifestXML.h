@@ -7,11 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-__attribute__((visibility("hidden")))
-@interface XCDYouTubeDashManifestXML : NSObject
+__attribute__((visibility("hidden"))) @interface XCDYouTubeDashManifestXML : NSObject
 
-- (instancetype)initWithXMLString:(NSString *)XMLString;
+- (instancetype)initWithXMLString:(NSString*)XMLString;
 
-- (NSDictionary *)streamURLs;
+- (NSDictionary*)streamURLs;
 
 @end

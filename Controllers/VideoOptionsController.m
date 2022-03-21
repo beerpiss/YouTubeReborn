@@ -1,6 +1,6 @@
 #import "VideoOptionsController.h"
 #ifndef __IPHONE_15_0
-    #import "iOS15Fix.h"
+#import "iOS15Fix.h"
 #endif
 
 static int __isOSVersionAtLeast(int major, int minor, int patch) {
@@ -172,11 +172,11 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
     [[NSUserDefaults standardUserDefaults] setBool:[sender isOn] forKey:titlesNames[indexPath.section][indexPath.row]];
     if ([titlesNames[indexPath.section][indexPath.row] isEqualToString:@"kShowWhenVideoEnds"]) {
         [self.tableView beginUpdates];
-        NSArray* indexPaths = @[[NSIndexPath indexPathForRow:1 inSection:1], [NSIndexPath indexPathForRow:2 inSection:1]];
+        NSArray* indexPaths =
+            @[ [NSIndexPath indexPathForRow:1 inSection:1], [NSIndexPath indexPathForRow:2 inSection:1] ];
         if (![sender isOn]) {
             [self.tableView deleteRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationTop];
-        }
-        else {
+        } else {
             [self.tableView insertRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationTop];
         }
         [self.tableView endUpdates];

@@ -1,6 +1,6 @@
 #import "UnderVideoOptionsController.h"
 #ifndef __IPHONE_15_0
-    #import "iOS15Fix.h"
+#import "iOS15Fix.h"
 #endif
 
 static int __isOSVersionAtLeast(int major, int minor, int patch) {

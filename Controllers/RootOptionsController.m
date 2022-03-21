@@ -1,7 +1,7 @@
 #import "RootOptionsController.h"
 #import "../DTTJailbreakDetection/DTTJailbreakDetection.h"
 #ifndef __IPHONE_15_0
-    #import "iOS15Fix.h"
+#import "iOS15Fix.h"
 #endif
 #import "ColourOptionsController.h"
 #import "CreditsController.h"
@@ -284,9 +284,9 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
         @"Others",
     ];
     if (section > 0) {
-        return sections[section-1];
-    }
-    else return nil;
+        return sections[section - 1];
+    } else
+        return nil;
 }
 
 - (CGFloat)tableView:(UITableView*)tableView heightForHeaderInSection:(NSInteger)section {

@@ -4,11 +4,10 @@
 
 #import <Foundation/Foundation.h>
 
-__attribute__((visibility("hidden")))
-@interface XCDYouTubePlayerScript : NSObject
+__attribute__((visibility("hidden"))) @interface XCDYouTubePlayerScript : NSObject
 
-- (instancetype) initWithString:(NSString *)string customPatterns:(NSArray<NSString *> *)customPatterns;
+- (instancetype)initWithString:(NSString*)string customPatterns:(NSArray<NSString*>*)customPatterns;
 
-- (NSString *) unscrambleSignature:(NSString *)scrambledSignature;
+- (NSString*)unscrambleSignature:(NSString*)scrambledSignature;
 
 @end

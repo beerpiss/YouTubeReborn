@@ -76,7 +76,10 @@ _
 obj
 .theos
 .DS_Store
+packages/
+
 
 # End of https://www.toptal.com/developers/gitignore/api/theos-tweak,objective-c
 
 .vscode/**/*.log
+RebornYouTubeKit

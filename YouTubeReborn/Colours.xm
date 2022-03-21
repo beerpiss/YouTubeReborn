@@ -1,10 +1,10 @@
 #import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
 #import <HBLog.h>
+#import <UIKit/UIKit.h>
+#import "../Extensions/NSString+HexColor.h"
+#import "../Extensions/UIColor+HexString.h"
 #import "Colours.h"
 #import "Settings.h"
-#import "../Extensions/UIColor+HexString.h"
-#import "../Extensions/NSString+HexColor.h"
 
 UIColor* rebornCustomColor;
 
@@ -343,7 +343,7 @@ UIColor* rebornCustomColor;
             // Color options
             @"kYTRebornColourOptionsV3" : defaultColor,
         }];
-        
+
         // Transitioning from legacy colors
         NSData* colorData = [defaults objectForKey:@"kYTRebornColourOptionsVTwo"];
         if ([colorData length]) {
@@ -351,15 +351,17 @@ UIColor* rebornCustomColor;
             [unarchiver setRequiresSecureCoding:NO];
             NSString* legacyHexString = [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
             if (legacyHexString != nil) {
-                NSLog(@"[YouTube Reborn] Found legacy color preference kYTRebornColourOptionsVTwo: %@", legacyHexString);
+                NSLog(@"[YouTube Reborn] Found legacy color preference kYTRebornColourOptionsVTwo: %@",
+                      legacyHexString);
                 UIColor* color = [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
                 [defaults setObject:[NSString hexStringFromColor:color] forKey:@"kYTRebornColourOptionsV3"];
-                NSLog(@"[YouTube Reborn] Converted legacy color to kYTRebornColourOptionsV3: %@", [defaults objectForKey:@"kYTRebornColourOptionsV3"]);
+                NSLog(@"[YouTube Reborn] Converted legacy color to kYTRebornColourOptionsV3: %@",
+                      [defaults objectForKey:@"kYTRebornColourOptionsV3"]);
                 [defaults removeObjectForKey:@"kYTRebornColourOptionsVTwo"];
                 [defaults synchronize];
             }
-        } 
-        
+        }
+
         if ([[defaults stringForKey:@"kYTRebornColourOptionsV3"] length]) {
             rebornCustomColor = [UIColor rebornColorFromHexString:[defaults stringForKey:@"kYTRebornColourOptionsV3"]];
             NSLog(@"[YouTube Reborn] Applying color %@", rebornCustomColor);

@@ -1,11 +1,10 @@
 #import "NSString+HexColor.h"
 
-@implementation NSString(HexColor)
+@implementation NSString (HexColor)
 
-+ (NSString *)hexStringFromColor:(UIColor *)color
-{
++ (NSString*)hexStringFromColor:(UIColor*)color {
     CGColorSpaceModel colorSpace = CGColorSpaceGetModel(CGColorGetColorSpace(color.CGColor));
-    const CGFloat *components = CGColorGetComponents(color.CGColor);
+    const CGFloat* components = CGColorGetComponents(color.CGColor);
 
     CGFloat r, g, b, a;
 
@@ -30,11 +29,8 @@
             return @"";
     }
 
-    return [NSString stringWithFormat:@"#%02lX%02lX%02lX%02lX",
-            lroundf(r * 255),
-            lroundf(g * 255),
-            lroundf(b * 255),
-            lroundf(a * 255)];
+    return [NSString stringWithFormat:@"#%02lX%02lX%02lX%02lX", lroundf(r * 255), lroundf(g * 255), lroundf(b * 255),
+                                      lroundf(a * 255)];
 }
 
 @end

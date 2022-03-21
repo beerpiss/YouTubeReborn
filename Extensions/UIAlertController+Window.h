@@ -1,5 +1,5 @@
-#import <objc/runtime.h>
 #import <UIKit/UIKit.h>
+#import <objc/runtime.h>
 
 @interface UIAlertController (Window)
 
@@ -10,6 +10,6 @@
 
 @interface UIAlertController (Private)
 
-@property (nonatomic, strong) UIWindow *alertWindow;
+@property(nonatomic, strong) UIWindow* alertWindow;
 
 @end
