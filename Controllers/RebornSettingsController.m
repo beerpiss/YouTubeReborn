@@ -1,4 +1,5 @@
 #import "RebornSettingsController.h"
+#import "../DTTJailbreakDetection/DTTJailbreakDetection.h"
 #import "../Extensions/UIAlertController+Window.h"
 
 #ifndef __IPHONE_15_0
@@ -17,6 +18,10 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
 @end
 
 @implementation RebornSettingsController
+
+- (id)init {
+    return [super initWithStyle:UITableViewStyleGrouped];
+}
 
 - (void)loadView {
     [super loadView];
@@ -44,7 +49,7 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView*)theTableView {
-    return 2;
+    return 3;
 }
 
 - (NSInteger)tableView:(UITableView*)theTableView numberOfRowsInSection:(NSInteger)section {
@@ -53,6 +58,9 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
     }
     if (section == 1) {
         return 3;
+    }
+    if (section == 2) {
+        return 1;
     }
     return 0;
 }
@@ -77,22 +85,31 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
                 cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             }
         }
-        if (indexPath.section == 1) {
+        if (indexPath.section >= 1) {
             NSArray* titles = @[
-                @"Hide Overlay PIP Button",
-                @"Hide Overlay Download Button",
-                @"Hide Overlay Options Button",
+                @[
+                    @"Hide Overlay PIP Button",
+                    @"Hide Overlay Download Button",
+                    @"Hide Overlay Options Button",
+                ],
+                @[
+                    @"Prevent Logouts For Sideloaded App",
+                ],
             ];
             NSArray* titlesNames = @[
-                @"kHideRebornPIPButton",
-                @"kHideRebornDWNButton",
-                @"kHideRebornOPButton",
+                @[
+                    @"kHideRebornPIPButton",
+                    @"kHideRebornDWNButton",
+                    @"kHideRebornOPButton",
+                ],
+                @[ @"kPreventSideloadedLogouts" ],
             ];
-            cell.textLabel.text = titles[indexPath.row];
+            cell.textLabel.text = titles[indexPath.section - 1][indexPath.row];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             UISwitch* toggleSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
             [toggleSwitch addTarget:self action:@selector(switchToggled:) forControlEvents:UIControlEventValueChanged];
-            toggleSwitch.on = [[NSUserDefaults standardUserDefaults] boolForKey:titlesNames[indexPath.row]];
+            toggleSwitch.on =
+                [[NSUserDefaults standardUserDefaults] boolForKey:titlesNames[indexPath.section - 1][indexPath.row]];
             cell.accessoryView = toggleSwitch;
         }
     }
@@ -103,7 +120,7 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
     [theTableView deselectRowAtIndexPath:indexPath animated:YES];
     if (indexPath.section == 0) {
         if (indexPath.row == 0) {
-            [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"kYTRebornColourOptionsVTwo"];
+            [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"kYTRebornColourOptionsV3"];
             [[NSUserDefaults standardUserDefaults] synchronize];
 
             [[UIApplication sharedApplication] suspend];
@@ -113,15 +130,22 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
     }
 }
 
-- (UIView*)tableView:(UITableView*)tableView viewForHeaderInSection:(NSInteger)section {
-    return [UIView new];
-}
-
 - (CGFloat)tableView:(UITableView*)tableView heightForHeaderInSection:(NSInteger)section {
-    if (section == 1) {
+    if (section == 1 || section == 2) {
         return 50;
     }
     return 0;
+}
+
+- (NSString*)tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section {
+    NSArray* sections = @[
+        @"Overlay Buttons",
+        @"Advanced",
+    ];
+    if (section > 0) {
+        return sections[section - 1];
+    } else
+        return nil;
 }
 
 - (UIView*)tableView:(UITableView*)tableView viewForFooterInSection:(NSInteger)section {
@@ -129,8 +153,8 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
 }
 
 - (CGFloat)tableView:(UITableView*)tableView heightForFooterInSection:(NSInteger)section {
-    if (section == 1) {
-        return 10;
+    if (section == 2) {
+        return 40;
     }
     return 0;
 }
@@ -147,39 +171,68 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
     UITableViewCell* cell = (UITableViewCell*)sender.superview;
     NSIndexPath* indexPath = [self.tableView indexPathForCell:cell];
     NSArray* titlesNames = @[
-        @"kHideRebornPIPButton",
-        @"kHideRebornDWNButton",
-        @"kHideRebornOPButton",
+        @[
+            @"kHideRebornPIPButton",
+            @"kHideRebornDWNButton",
+            @"kHideRebornOPButton",
+        ],
+        @[ @"kPreventSideloadedLogouts" ],
     ];
     // Reborn's PIP can only be used with Background Playback enabled
-    if ([titlesNames[indexPath.row] isEqualToString:@"kHideRebornPIPButton"] &&
+    if ([titlesNames[indexPath.section - 1][indexPath.row] isEqualToString:@"kHideRebornPIPButton"] &&
         ![[NSUserDefaults standardUserDefaults] boolForKey:@"kEnableBackgroundPlayback"] && ![sender isOn]) {
         UIAlertController* alertMenu =
             [UIAlertController alertControllerWithTitle:@"Warning"
                                                 message:@"Reborn's Picture in Picture requires background playback to "
-                                                        @"be enabled.\n\nWould you like to enable it now?"
+                                                        @"be enabled.\nWould you like to enable it now?"
                                          preferredStyle:UIAlertControllerStyleAlert];
-        [alertMenu addAction:[UIAlertAction
-                                 actionWithTitle:@"Yes"
-                                           style:UIAlertActionStyleDefault
-                                         handler:^(UIAlertAction* action) {
-                                           [[NSUserDefaults standardUserDefaults] setBool:YES
-                                                                                   forKey:@"kEnableBackgroundPlayback"];
-                                           [[NSUserDefaults standardUserDefaults] setBool:[sender isOn]
-                                                                                   forKey:titlesNames[indexPath.row]];
-                                         }]];
+        [alertMenu addAction:[UIAlertAction actionWithTitle:@"Yes"
+                                                      style:UIAlertActionStyleDefault
+                                                    handler:^(UIAlertAction* action) {
+                                                      [[NSUserDefaults standardUserDefaults]
+                                                          setBool:YES
+                                                           forKey:@"kEnableBackgroundPlayback"];
+                                                      [[NSUserDefaults standardUserDefaults]
+                                                          setBool:[sender isOn]
+                                                           forKey:titlesNames[indexPath.section - 1][indexPath.row]];
+                                                    }]];
         [alertMenu addAction:[UIAlertAction actionWithTitle:@"No"
                                                       style:UIAlertActionStyleCancel
                                                     handler:^(UIAlertAction* action) {
                                                       [sender setOn:YES animated:YES];
                                                       [[NSUserDefaults standardUserDefaults]
                                                           setBool:YES
-                                                           forKey:titlesNames[indexPath.row]];
+                                                           forKey:titlesNames[indexPath.section - 1][indexPath.row]];
                                                     }]];
         [alertMenu show];
 
+    } else if ([titlesNames[indexPath.section - 1][indexPath.row] isEqualToString:@"kPreventSideloadedLogouts"] &&
+               ![DTTJailbreakDetection isJailbroken] && ![sender isOn]) {
+        UIAlertController* alertMenu =
+            [UIAlertController alertControllerWithTitle:@"Warning"
+                                                message:@"It seems that you are sideloading YouTube.\n"
+                                                        @"Disabling this option requires you to login to the app "
+                                                        @"every time.\nWould you like to continue?"
+                                         preferredStyle:UIAlertControllerStyleAlert];
+        [alertMenu addAction:[UIAlertAction actionWithTitle:@"Yes"
+                                                      style:UIAlertActionStyleDefault
+                                                    handler:^(UIAlertAction* action) {
+                                                      [[NSUserDefaults standardUserDefaults]
+                                                          setBool:[sender isOn]
+                                                           forKey:titlesNames[indexPath.section - 1][indexPath.row]];
+                                                    }]];
+        [alertMenu addAction:[UIAlertAction actionWithTitle:@"No"
+                                                      style:UIAlertActionStyleCancel
+                                                    handler:^(UIAlertAction* action) {
+                                                      [sender setOn:YES animated:YES];
+                                                      [[NSUserDefaults standardUserDefaults]
+                                                          setBool:YES
+                                                           forKey:titlesNames[indexPath.section - 1][indexPath.row]];
+                                                    }]];
+        [alertMenu show];
     } else {
-        [[NSUserDefaults standardUserDefaults] setBool:[sender isOn] forKey:titlesNames[indexPath.row]];
+        [[NSUserDefaults standardUserDefaults] setBool:[sender isOn]
+                                                forKey:titlesNames[indexPath.section - 1][indexPath.row]];
     }
     [[NSUserDefaults standardUserDefaults] synchronize];
 }

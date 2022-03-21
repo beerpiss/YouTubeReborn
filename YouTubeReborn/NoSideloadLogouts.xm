@@ -39,8 +39,12 @@
 
 %ctor {
     @autoreleasepool {
-        if (![DTTJailbreakDetection isJailbroken]) {
-            HBLogDebug(@"[YouTube Reborn] Not jailbroken, preventing logouts");
+        NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+        [defaults registerDefaults:@{
+            @"kPreventSideloadedLogouts" : @(![DTTJailbreakDetection isJailbroken]),
+        }];
+        if ([defaults boolForKey:@"kPreventSideloadedLogouts"]) {
+            HBLogDebug(@"[YouTube Reborn] Preventing logouts");
             %init(NoSideloadLogouts);
         }
     }
