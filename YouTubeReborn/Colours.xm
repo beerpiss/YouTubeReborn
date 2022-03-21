@@ -11,72 +11,72 @@ UIColor* rebornCustomColor;
 %group gColourOptions
 %hook UIView
 - (void)setBackgroundColor:(UIColor*)color {
-    if ([self.nextResponder isKindOfClass:NSClassFromString(@"YTPivotBarView")]) {
+    if ([self.nextResponder isKindOfClass:%c(YTPivotBarView)]) {
         color = rebornCustomColor;
     }
-    if ([self.nextResponder isKindOfClass:NSClassFromString(@"YTSlideForActionsView")]) {
+    if ([self.nextResponder isKindOfClass:%c(YTSlideForActionsView)]) {
         color = rebornCustomColor;
     }
-    if ([self.nextResponder isKindOfClass:NSClassFromString(@"YTChipCloudCell")]) {
+    if ([self.nextResponder isKindOfClass:%c(YTChipCloudCell)]) {
         color = rebornCustomColor;
     }
-    if ([self.nextResponder isKindOfClass:NSClassFromString(@"YTEngagementPanelView")]) {
+    if ([self.nextResponder isKindOfClass:%c(YTEngagementPanelView)]) {
         color = rebornCustomColor;
     }
-    if ([self.nextResponder isKindOfClass:NSClassFromString(@"YTPlaylistPanelProminentThumbnailVideoCell")]) {
+    if ([self.nextResponder isKindOfClass:%c(YTPlaylistPanelProminentThumbnailVideoCell)]) {
         color = rebornCustomColor;
     }
-    if ([self.nextResponder isKindOfClass:NSClassFromString(@"YTPlaylistHeaderView")]) {
+    if ([self.nextResponder isKindOfClass:%c(YTPlaylistHeaderView)]) {
         color = rebornCustomColor;
     }
-    if ([self.nextResponder isKindOfClass:NSClassFromString(@"YTAsyncCollectionView")]) {
+    if ([self.nextResponder isKindOfClass:%c(YTAsyncCollectionView)]) {
         color = rebornCustomColor;
     }
-    if ([self.nextResponder isKindOfClass:NSClassFromString(@"YTLinkCell")]) {
+    if ([self.nextResponder isKindOfClass:%c(YTLinkCell)]) {
         color = rebornCustomColor;
     }
-    if ([self.nextResponder isKindOfClass:NSClassFromString(@"YTMessageCell")]) {
+    if ([self.nextResponder isKindOfClass:%c(YTMessageCell)]) {
         color = rebornCustomColor;
     }
-    if ([self.nextResponder isKindOfClass:NSClassFromString(@"YTSearchView")]) {
+    if ([self.nextResponder isKindOfClass:%c(YTSearchView)]) {
         color = rebornCustomColor;
     }
-    if ([self.nextResponder isKindOfClass:NSClassFromString(@"YTDrawerAvatarCell")]) {
+    if ([self.nextResponder isKindOfClass:%c(YTDrawerAvatarCell)]) {
         color = rebornCustomColor;
     }
-    if ([self.nextResponder isKindOfClass:NSClassFromString(@"YTFeedHeaderView")]) {
+    if ([self.nextResponder isKindOfClass:%c(YTFeedHeaderView)]) {
         color = rebornCustomColor;
     }
-    if ([self.nextResponder isKindOfClass:NSClassFromString(@"YCHLiveChatTextCell")]) {
+    if ([self.nextResponder isKindOfClass:%c(YCHLiveChatTextCell)]) {
         color = rebornCustomColor;
     }
-    if ([self.nextResponder isKindOfClass:NSClassFromString(@"YCHLiveChatViewerEngagementCell")]) {
+    if ([self.nextResponder isKindOfClass:%c(YCHLiveChatViewerEngagementCell)]) {
         color = rebornCustomColor;
     }
-    if ([self.nextResponder isKindOfClass:NSClassFromString(@"YTCommentsHeaderView")]) {
+    if ([self.nextResponder isKindOfClass:%c(YTCommentsHeaderView)]) {
         color = rebornCustomColor;
     }
-    if ([self.nextResponder isKindOfClass:NSClassFromString(@"YCHLiveChatView")]) {
+    if ([self.nextResponder isKindOfClass:%c(YCHLiveChatView)]) {
         color = rebornCustomColor;
     }
-    if ([self.nextResponder isKindOfClass:NSClassFromString(@"YCHLiveChatTickerViewController")]) {
+    if ([self.nextResponder isKindOfClass:%c(YCHLiveChatTickerViewController)]) {
         color = rebornCustomColor;
     }
     %orig;
 }
 - (void)layoutSubviews {
     %orig();
-    if ([self.nextResponder isKindOfClass:NSClassFromString(@"_ASDisplayView")]) {
+    if ([self.nextResponder isKindOfClass:%c(_ASDisplayView)]) {
         self.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.0];
     }
 }
 %end
 %hook YTAsyncCollectionView
 - (void)setBackgroundColor:(UIColor*)color {
-    if ([self.nextResponder isKindOfClass:NSClassFromString(@"YTRelatedVideosCollectionViewController")]) {
+    if ([self.nextResponder isKindOfClass:%c(YTRelatedVideosCollectionViewController)]) {
         color = [[UIColor blackColor] colorWithAlphaComponent:0.0];
     } else if ([self.nextResponder
-                   isKindOfClass:NSClassFromString(@"YTFullscreenMetadataHighlightsCollectionViewController")]) {
+                   isKindOfClass:%c(YTFullscreenMetadataHighlightsCollectionViewController)]) {
         color = [[UIColor blackColor] colorWithAlphaComponent:0.0];
     } else {
         color = rebornCustomColor;
