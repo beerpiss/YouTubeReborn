@@ -16,7 +16,7 @@ YTUserDefaults* ytThemeSettings;
 %hook YTWrapperView
 - (void)layoutSubviews {
     %orig();
-    if ([self.nextResponder isKindOfClass:NSClassFromString(@"YTSettingsViewController")]) {
+    if ([self.nextResponder isKindOfClass:%c(YTSettingsViewController)]) {
         UIView* childView = MSHookIvar<UIView*>(self, "_childView");
         childView.frame =
             CGRectMake(childView.frame.origin.x, 51, childView.frame.size.width, childView.frame.size.height);
