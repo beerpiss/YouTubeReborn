@@ -1,10 +1,37 @@
-#import "SponsorBlockClient.h"
 #import <Foundation/Foundation.h>
+#import "SponsorBlockClient.h"
 #import "SponsorSegment.h"
 
 #define SPONSORBLOCK_MAIN_API @"https://sponsor.ajay.app"
 #define DEFAULT_CATEGORIES \
     @[ @"sponsor", @"selfpromo", @"poi_highlight", @"intro", @"outro", @"preview", @"filler", @"music_offtopic" ]
+
+NSString* QueryStringWithDictionary(NSDictionary* dictionary) {
+    NSArray* keys = [dictionary.allKeys
+        filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary* bindings) {
+          return [(NSObject*)evaluatedObject isKindOfClass:[NSString class]];
+        }]];
+
+    NSMutableString* query = [NSMutableString new];
+    for (NSString* key in [keys sortedArrayUsingSelector:@selector(compare:)]) {
+        // There can be multiple values for the same key in a URL query string, so we try to support that.
+        if ([(NSObject*)dictionary[key] isKindOfClass:[NSArray class]] ||
+            [(NSObject*)dictionary[key] isKindOfClass:[NSMutableArray class]] ||
+            [(NSObject*)dictionary[key] isKindOfClass:[NSSet class]]) {
+            for (NSObject* value in dictionary[key]) {
+                if (query.length > 0)
+                    [query appendString:@"&"];
+                [query appendFormat:@"%@=%@", key, [value description]];
+            }
+        } else {
+            if (query.length > 0)
+                [query appendString:@"&"];
+            [query appendFormat:@"%@=%@", key, [(NSObject*)dictionary[key] description]];
+        }
+    }
+
+    return [query stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+}
 
 @implementation SponsorBlockClient
 - (instancetype)initWithUserID:(NSString*)userID apiURL:(NSString*)apiURL categories:(NSArray<NSString*>*)categories {
@@ -32,18 +59,24 @@
 - (void)getSponsorSegments:(NSString*)videoID
                    handler:(void (^)(NSArray<SponsorSegment*>* sponsorSegments, NSError* error))handler {
     NSMutableURLRequest* request = [[NSMutableURLRequest alloc] init];
-    NSString* categories = [NSString stringWithFormat:@"[%%22%@%%22]", [self.categories componentsJoinedByString:@"%22,%20%22"]];
+    NSDictionary* query = @{
+        @"videoID" : videoID,
+        @"category" : self.categories,
+    };
 
-    [request setURL:[NSURL URLWithString:[
-                 NSString stringWithFormat:@"%@/api/skipSegments?videoID=%@&categories=%@", self.apiURL, videoID,
-                 categories
-             ]]];
+    [request setURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/api/skipSegments?%@", self.apiURL,
+                                                                    QueryStringWithDictionary(query)]]];
     request.HTTPMethod = @"GET";
     NSURLSessionDataTask* dataTask = [[NSURLSession sharedSession]
         dataTaskWithRequest:request
           completionHandler:^(NSData* data, NSURLResponse* response, NSError* error) {
             if (data != nil && error == nil) {
                 NSArray* jsonData = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
+                if (error != nil) {
+                    handler(nil, error);
+                    return;
+                }
+                NSLog(@"[YouTube Reborn] [SponsorBlock] Received data from SponsorBlock API: %@", jsonData);
                 NSMutableArray* segments = [NSMutableArray array];
                 for (NSDictionary* dict in jsonData) {
                     SponsorSegment* segment =
@@ -57,17 +90,20 @@
                                                            userID:(NSString*)[dict objectForKey:@"userID"]];
                     [segments addObject:segment];
                 }
-                NSArray* sponsorSegments = [segments sortedArrayUsingComparator:^NSComparisonResult(
-                                                         SponsorSegment* obj1, SponsorSegment* obj2) {
-                                             NSNumber* first = @(obj1.startTime);
-                                             NSNumber* second = @(obj2.startTime);
-                                             return [first compare:second];
-                                           }].copy;
-                handler(sponsorSegments, nil);
+                [segments sortUsingComparator:^NSComparisonResult(SponsorSegment* obj1, SponsorSegment* obj2) {
+                  if (obj1.startTime < obj2.startTime)
+                      return NSOrderedAscending;
+                  else if (obj1.startTime > obj2.startTime)
+                      return NSOrderedDescending;
+                  else
+                      return NSOrderedSame;
+                }];
+                handler(segments.copy, nil);
             } else {
                 handler(nil, error);
             }
           }];
+    NSLog(@"[YouTube Reborn] [SponsorBlock] Making request to %@", request.URL);
     [dataTask resume];
 }
 
@@ -124,7 +160,7 @@
 }
 - (void)categoryVoteForSegment:(SponsorSegment*)segment
                         userID:(NSString*)userID
-                      category:(NSString*)category 
+                      category:(NSString*)category
                        handler:(void (^)(NSError* error))handler {
     NSMutableURLRequest* request = [[NSMutableURLRequest alloc] init];
     [request setURL:[NSURL URLWithString:[NSString
