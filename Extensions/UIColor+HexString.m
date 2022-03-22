@@ -3,6 +3,11 @@
 @implementation UIColor (HexString)
 
 + (UIColor*)rebornColorFromHexString:(NSString*)hexString {
+    // Normalize color string
+    if (![hexString hasPrefix:@"#"]) {
+        hexString = [NSString stringWithFormat:@"#%@", hexString];
+    }
+
     unsigned int hexInt = 0;
     NSScanner* scanner = [NSScanner scannerWithString:hexString];
     [scanner setCharactersToBeSkipped:[NSCharacterSet characterSetWithCharactersInString:@"#"]];
