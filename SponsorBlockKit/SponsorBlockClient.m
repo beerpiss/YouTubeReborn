@@ -98,7 +98,7 @@
                                             }];
         [dataTask resume];
     }
-    handler(rejectedSegments, errors);
+    handler(rejectedSegments.copy, errors.copy);
 }
 
 - (void)normalVoteForSegment:(SponsorSegment*)segment
