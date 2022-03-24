@@ -58,7 +58,7 @@
 
 - (NSString*)hexString {
     CGColorSpaceModel colorSpace = CGColorSpaceGetModel(CGColorGetColorSpace(self.CGColor));
-    const CGFloat *components = CGColorGetComponents(self.CGColor);
+    const CGFloat* components = CGColorGetComponents(self.CGColor);
 
     CGFloat r, g, b, a;
 
@@ -81,15 +81,20 @@
             b = (1 - components[2]) * (1 - components[3]);
             a = 1.0f;
             break;
-        default:
-            return @"";
+        default: {
+            // Force the color model into RGB
+            CGColorRef cgColorRGB = CGColorCreateCopyByMatchingToColorSpace(
+                CGColorSpaceCreateDeviceRGB(), kCGRenderingIntentDefault, self.CGColor, NULL);
+            const CGFloat* componentsRGB = CGColorGetComponents(cgColorRGB);
+            r = componentsRGB[0];
+            g = componentsRGB[1];
+            b = (CGColorGetNumberOfComponents(cgColorRGB) > 2) ? componentsRGB[2] : 0.0f;
+            a = (CGColorGetNumberOfComponents(cgColorRGB) > 3) ? componentsRGB[3] : 1.0f;
+            break;
+        }
     }
-
-    return [NSString stringWithFormat:@"#%02lX%02lX%02lX%02lX",
-            lroundf(r * 255),
-            lroundf(g * 255),
-            lroundf(b * 255),
-            lroundf(a * 255)];
+    return [NSString stringWithFormat:@"#%02lX%02lX%02lX%02lX", lroundf(r * 255), lroundf(g * 255), lroundf(b * 255),
+                                      lroundf(a * 255)];
 }
 
 @end

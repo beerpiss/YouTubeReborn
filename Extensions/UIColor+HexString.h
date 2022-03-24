@@ -5,7 +5,7 @@
 /*!
  * The #RRGGBBAA hex string representation of the color.
  */
-@property (strong, nonatomic) NSString* hexString;
+@property (readonly, strong, nonatomic) NSString* hexString;
 /*!
  * @brief Converts a hex string into a UIColor.
  *
