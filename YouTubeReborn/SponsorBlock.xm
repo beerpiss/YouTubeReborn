@@ -12,6 +12,7 @@ SponsorBlockClient* sbclient;
     %orig;
     if (!self.isPlayingAd && [self.view.overlayView isKindOfClass:%c(YTMainAppVideoPlayerOverlayView)]) {
         [sbclient getSponsorSegments:self.currentVideoID
+                 useSHA256HashPrefix:YES
                              handler:^(NSArray<SponsorSegment*>* sponsorSegments, NSError* error) {
                                if (error == nil) {
                                    NSLog(@"[YouTube Reborn] [SponsorBlock] Found %lu segments for %@",
@@ -67,77 +68,84 @@ SponsorBlockClient* sbclient;
     @autoreleasepool {
         NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
         [defaults registerDefaults:@{
-            @"kRebornSponsorBlock" : @{
-                @"enabled" : @YES,
-                @"userID" : [[NSUUID UUID] UUIDString],
-                @"apiURL" : @"https://sponsor.ajay.app",
-                @"timeSavedForMyself" : @0.0f,
-                @"minimumSegmentDuration" : @0.0f,
-                @"showSkipNotice" : @YES,
-                @"showButtonsInPlayer" : @YES,
-                @"showModifiedTime" : @YES,
-                @"skipTimeTracking" : @YES,
-                @"skipNoticeDuration" : @2.0f,
-                @"whitelistedChannels" : @[],
-                @"categorySettings" : @{
-                    /*
-                     * 0: disabled
-                     * 1: auto skip
-                     * 2: manual skip
-                     * 3: show in bar
-                     */
-                    @"sponsor" : @{
-                        @"status" : @1,
-                        @"color" : @"#00D400",
-                        @"unsubmittedColor" : @"#007800",
-                    },
-                    @"selfpromo" : @{
-                        @"status" : @1,
-                        @"color" : @"#FFFF00",
-                        @"unsubmittedColor" : @"#BFBF35",
-                    },
-                    @"poi_highlight" : @{
-                        @"status" : @1,
-                        @"color" : @"#FF1684",
-                        @"unsubmittedColor" : @"#9B044C",
-                    },
-                    @"intro" : @{
-                        @"status" : @1,
-                        @"color" : @"#00FFFF",
-                        @"unsubmittedColor" : @"#008080",
-                    },
-                    @"outro" : @{
-                        @"status" : @1,
-                        @"color" : @"#0202ED",
-                        @"unsubmittedColor" : @"#000070",
-                    },
-                    @"preview" : @{
-                        @"status" : @1,
-                        @"color" : @"#008FD6",
-                        @"unsubmittedColor" : @"#005799",
-                    },
-                    @"filler" : @{
-                        @"status" : @1,
-                        @"color" : @"#7300FF",
-                        @"unsubmittedColor" : @"#2E8066",
-                    },
-                    @"music_offtopic" : @{
-                        @"status" : @1,
-                        @"color" : @"#FF9900",
-                        @"unsubmittedColor" : @"#A6634A",
-                    },
-                },
-            }
+            @"kRebornSponsorBlockEnabled" : @YES,
+            @"kRebornSponsorBlockUserID" : [[NSUUID UUID] UUIDString],
+            @"kRebornSponsorBlockAPIURL" : @"https://sponsor.ajay.app",
+            @"kRebornSponsorBlockTimeSaved" : @0.0f,
+            @"kRebornSponsorBlockMinimumSegmentDuration" : @0.0f,
+            @"kRebornSponsorBlockShowSkipNotice" : @YES,
+            @"kRebornSponsorBlockShowButtonsInPlayer" : @YES,
+            @"kRebornSponsorBlockShowModifiedTime" : @YES,
+            @"kRebornSponsorBlockSkipTimeTracking" : @YES,
+            @"kRebornSponsorBlockSkipNoticeDuration" : @2.0f,
+            @"kRebornSponsorBlockWhitelistedChannels" : @[],
+            @"kRebornSponsorBlockSponsor" : @{
+                @"categoryName" : @"sponsor",
+                @"status" : @1,
+                @"color" : @"#00D400",
+                @"unsubmittedColor" : @"#007800",
+            },
+            @"kRebornSponsorBlockSelfPromo" : @{
+                @"categoryName" : @"selfpromo",
+                @"status" : @1,
+                @"color" : @"#FFFF00",
+                @"unsubmittedColor" : @"#BFBF35",
+            },
+            @"kRebornSponsorBlockHighlight" : @{
+                @"categoryName" : @"poi_highlight",
+                @"status" : @1,
+                @"color" : @"#FF1684",
+                @"unsubmittedColor" : @"#9B044C",
+            },
+            @"kRebornSponsorBlockIntro" : @{
+                @"categoryName" : @"intro",
+                @"status" : @1,
+                @"color" : @"#00FFFF",
+                @"unsubmittedColor" : @"BFBF35",
+            },
+            @"kRebornSponsorBlockOutro" : @{
+                @"categoryName" : @"outro",
+                @"status" : @1,
+                @"color" : @"#0202ED",
+                @"unsubmittedColor" : @"#000070",
+            },
+            @"kRebornSponsorBlockPreview" : @{
+                @"categoryName" : @"preview",
+                @"status" : @1,
+                @"color" : @"#008FD6",
+                @"unsubmittedColor" : @"#005799",
+            },
+            @"kRebornSponsorBlockFiller" : @{
+                @"categoryName" : @"filler",
+                @"status" : @1,
+                @"color" : @"#7300FF",
+                @"unsubmittedColor" : @"#2E8066",
+            },
+            @"kRebornSponsorBlockOffTopic" : @{
+                @"categoryName" : @"music_offtopic",
+                @"status" : @1,
+                @"color" : @"#FF9900",
+                @"unsubmittedColor" : @"#A6634A",
+            },
         }];
         [defaults synchronize];
-        if ([defaults objectForKey:@"kRebornSponsorBlock"][@"enabled"]) {
-            NSString* _userID = [defaults objectForKey:@"kRebornSponsorBlock"][@"userID"];
-            NSString* _apiURL = [defaults objectForKey:@"kRebornSponsorBlock"][@"apiURL"];
-            NSDictionary* _categorySettings = [defaults objectForKey:@"kRebornSponsorBlock"][@"categorySettings"];
+        if ([defaults objectForKey:@"kRebornSponsorBlockEnabled"]) {
+            NSString* _userID = [defaults objectForKey:@"kRebornSponsorBlockUserID"];
+            NSString* _apiURL = [defaults objectForKey:@"kRebornSponsorBlockAPIURL"];
+            NSArray* _categorySettings = @[
+                @"kRebornSponsorBlockSponsor",
+                @"kRebornSponsorBlockSelfPromo",
+                @"kRebornSponsorBlockHighlight",
+                @"kRebornSponsorBlockIntro",
+                @"kRebornSponsorBlockOutro",
+                @"kRebornSponsorBlockPreview",
+                @"kRebornSponsorBlockFiller",
+                @"kRebornSponsorBlockOffTopic",
+            ];
             NSMutableArray* _categories = [[NSMutableArray alloc] init];
             for (id key in _categorySettings) {
-                if ([[_categorySettings objectForKey:key][@"status"] integerValue] != 0) {
-                    [_categories addObject:key];
+                if ([[defaults objectForKey:key][@"status"] integerValue] != 0) {
+                    [_categories addObject:[defaults objectForKey:key][@"categoryName"]];
                 }
             }
             NSLog(@"[YouTube Reborn] Activating SponsorBlock with user ID %@, endpoint %@, categories %@", _userID,

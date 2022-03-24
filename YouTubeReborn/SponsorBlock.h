@@ -52,7 +52,7 @@
 @interface YTPlayerViewController : UIViewController
 @property (strong, nonatomic) YTPlayerView *view;
 
-@property (strong, nonatomic) NSArray <SponsorSegment *> *skipSegments;
+@property(strong, nonatomic) NSArray<SponsorSegment*>* skipSegments;
 @property(nonatomic, assign) NSInteger currentSponsorSegment;
 @property (nonatomic, assign) NSInteger unskippedSegment;
 
