@@ -3,11 +3,13 @@
 #ifndef __IPHONE_15_0
 #import "iOS15Fix.h"
 #endif
+#import "../Extensions/UIColor+HexString.h"
 #import "ColourOptionsController.h"
 #import "CreditsController.h"
 #import "DownloadsController.h"
 #import "OverlayOptionsController.h"
 #import "RebornSettingsController.h"
+#import "RebornTableCell.h"
 #import "SearchOptionsController.h"
 #import "ShortsOptionsController.h"
 #import "SponsorBlockOptionsController.h"
@@ -77,10 +79,10 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
         return 1 + canOpenInFiles + canOpenInFilza;
     }
     if (section == 2) {
-        return 8;
+        return 7;
     }
     if (section == 3) {
-        return 9;
+        return 10;
     }
     if (section == 4) {
         return 2;
@@ -90,10 +92,10 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
 
 - (UITableViewCell*)tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath {
     static NSString* CellIdentifier = @"RootTableViewCell";
-    UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    RebornTableCell* cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
 
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:nil];
+        cell = [[RebornTableCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:nil];
         cell.textLabel.adjustsFontSizeToFitWidth = true;
         if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleLight) {
             cell.backgroundColor = [UIColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:1.0];
@@ -122,8 +124,8 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
         }
         if (indexPath.section == 2) {
             NSArray* titles = @[
-                @"Video Options", @"Under-Video Options", @"Overlay Options", @"Tab Bar Options", @"Colour Options",
-                @"Search Options", @"Shorts Options",
+                @"Video Options", @"Under-Video Options", @"Overlay Options", @"Tab Bar Options", @"Search Options",
+                @"Shorts Options",
                 @"SponsorBlock Options",  // TODO: Actually implement SponsorBlock
             ];
             cell.textLabel.text = titles[indexPath.row];
@@ -131,6 +133,7 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
         }
         if (indexPath.section == 3) {
             NSArray* titles = @[
+                @"Background Color",
                 @"Enable iPad Style On iPhone",
                 @"Unlock UHD Quality",
                 @"No Cast Button",
@@ -142,6 +145,7 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
                 @"Use Native Share Sheet",
             ];
             NSArray* titlesNames = @[
+                @"kYTRebornColourOptionsV3",
                 @"kEnableiPadStyleOniPhone",
                 @"kUnlockUHDQuality",
                 @"kNoCastButton",
@@ -153,11 +157,30 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
                 @"kUseNativeShareSheet",
             ];
             cell.textLabel.text = titles[indexPath.row];
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            UISwitch* toggleSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
-            [toggleSwitch addTarget:self action:@selector(switchToggled:) forControlEvents:UIControlEventValueChanged];
-            toggleSwitch.on = [[NSUserDefaults standardUserDefaults] boolForKey:titlesNames[indexPath.row]];
-            cell.accessoryView = toggleSwitch;
+            if (indexPath.row == 0) {
+                UIColorWell* toggleSwitch = [[UIColorWell alloc] initWithFrame:CGRectMake(0, 0, 32, 32)];
+                [toggleSwitch addTarget:cell
+                                 action:@selector(presentColorPicker:)
+                       forControlEvents:UIControlEventTouchUpInside];
+                [toggleSwitch addTarget:cell
+                                 action:@selector(colorWellValueChanged:)
+                       forControlEvents:UIControlEventValueChanged];
+                toggleSwitch.selectedColor =
+                    [UIColor rebornColorFromHexString:[[NSUserDefaults standardUserDefaults]
+                                                          objectForKey:titlesNames[indexPath.row]]];
+                cell.category = titlesNames[indexPath.row];
+                cell.colorWell = toggleSwitch;
+                cell.notificationName = @"h.ryan.youtubereborn.prefs.color";
+                cell.accessoryView = toggleSwitch;
+            } else if (indexPath.row > 0 && indexPath.row < 10) {
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                UISwitch* toggleSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
+                [toggleSwitch addTarget:self
+                                 action:@selector(switchToggled:)
+                       forControlEvents:UIControlEventValueChanged];
+                toggleSwitch.on = [[NSUserDefaults standardUserDefaults] boolForKey:titlesNames[indexPath.row]];
+                cell.accessoryView = toggleSwitch;
+            }
         }
         if (indexPath.section == 4) {
             NSArray* titles = @[ @"Reborn Settings", @"Credits" ];
@@ -239,15 +262,12 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
                 optionsController = [[TabBarOptionsController alloc] init];
                 break;
             case 4:
-                optionsController = [[ColourOptionsController alloc] init];
-                break;
-            case 5:
                 optionsController = [[SearchOptionsController alloc] init];
                 break;
-            case 6:
+            case 5:
                 optionsController = [[ShortsOptionsController alloc] init];
                 break;
-            case 7:
+            case 6:
                 optionsController = [[SponsorBlockOptionsController alloc] init];
                 break;
             default:
@@ -278,25 +298,31 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
 
 - (NSString*)tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section {
     NSArray* sections = @[
+        @"",
         @"Downloads",
         @"Options",
         @"General Preferences",
         @"Others",
     ];
-    if (section > 0) {
-        return sections[section - 1];
+    if (section < 5) {
+        return sections[section];
     } else
         return nil;
 }
 
 - (CGFloat)tableView:(UITableView*)tableView heightForHeaderInSection:(NSInteger)section {
-    if (section == 1 || section == 2 || section == 3 || section == 4) {
+    if (section == 0) {
+        return 60;
+    } else if (section >= 1 && section <= 4) {
         return 40;
     }
     return 0;
 }
 
 - (NSString*)tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section {
+    if (section == 0) {
+        return @"Some settings need applying.";
+    }
     if (section == 4) {
         return @"Version: @YOUTUBE_REBORN_VERSION@";
     }
@@ -304,8 +330,10 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
 }
 
 - (void)tableView:(UITableView*)tableView willDisplayFooterView:(UIView*)view forSection:(NSInteger)section {
-    UITableViewHeaderFooterView* footer = (UITableViewHeaderFooterView*)view;
-    footer.textLabel.textAlignment = NSTextAlignmentCenter;
+    if (section == 4) {
+        UITableViewHeaderFooterView* footer = (UITableViewHeaderFooterView*)view;
+        footer.textLabel.textAlignment = NSTextAlignmentCenter;
+    }
 }
 
 - (CGFloat)tableView:(UITableView*)tableView heightForFooterInSection:(NSInteger)section {
@@ -334,6 +362,7 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
     UITableViewCell* cell = (UITableViewCell*)sender.superview;
     NSIndexPath* indexPath = [self.tableView indexPathForCell:cell];
     NSArray* titlesNames = @[
+        @"",
         @"kEnableiPadStyleOniPhone",
         @"kUnlockUHDQuality",
         @"kNoCastButton",
