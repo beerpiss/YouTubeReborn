@@ -25,8 +25,7 @@ YTUserDefaults* ytThemeSettings;
 
         UIView* rebornView = [[UIView alloc] initWithFrame:CGRectMake(0, 10, childView.bounds.size.width, 51)];
         [rebornView setUserInteractionEnabled:YES];
-        rebornView.backgroundColor = [UIColor
-            rebornColorFromHexString:[[NSUserDefaults standardUserDefaults] stringForKey:@"kYTRebornColourOptionsV3"]];
+        rebornView.backgroundColor = [UIColor clearColor];
 
         UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(16, 0, rebornView.frame.size.width, 51)];
         label.text = @"YouTube Reborn settings";
