@@ -12,7 +12,7 @@ SponsorBlockClient* sbclient;
     %orig;
     if (!self.isPlayingAd && [self.view.overlayView isKindOfClass:%c(YTMainAppVideoPlayerOverlayView)]) {
         [sbclient getSponsorSegments:self.currentVideoID
-                 useSHA256HashPrefix:YES
+                 useSHA256HashPrefix:[[NSUserDefaults standardUserDefaults] boolForKey:@"kRebornSponsorBlockIncreasedPrivacy"]
                              handler:^(NSArray<SponsorSegment*>* sponsorSegments, NSError* error) {
                                if (error == nil) {
                                    NSLog(@"[YouTube Reborn] [SponsorBlock] Found %lu segments for %@",
@@ -77,6 +77,7 @@ SponsorBlockClient* sbclient;
             @"kRebornSponsorBlockShowButtonsInPlayer" : @YES,
             @"kRebornSponsorBlockShowModifiedTime" : @YES,
             @"kRebornSponsorBlockSkipTimeTracking" : @YES,
+            @"kRebornSponsorBlockIncreasedPrivacy" : @YES,
             @"kRebornSponsorBlockSkipNoticeDuration" : @2.0f,
             @"kRebornSponsorBlockWhitelistedChannels" : @[],
             @"kRebornSponsorBlockSponsor" : @{
