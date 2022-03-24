@@ -1,5 +1,6 @@
 #import "SponsorBlockOptionsController.h"
 #import "../Extensions/UIColor+HexString.h"
+#import "RebornTableCell.h"
 #ifndef __IPHONE_15_0
 #import "iOS15Fix.h"
 #endif
@@ -13,35 +14,6 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
 }
 
 @interface SponsorBlockOptionsController ()
-@end
-
-@implementation SponsorBlockTableCell
-// FIXME: I Have Zero Fucking Idea Why My Delegate Function Isn't Working But It's Annoying As Hell
-- (void)colorWellValueChanged:(UITableViewCell*)sender {
-    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-    UIColor* color = self.colorWell.selectedColor;
-    NSLog(@"[YouTube Reborn] [SponsorBlockOptionsController] User selected color %@ for category %@, color type %@",
-          color, self.category, self.colorType);
-
-    NSMutableDictionary* categorySettings = [(NSDictionary*)[defaults objectForKey:self.category] mutableCopy];
-    [categorySettings setObject:color.hexString forKey:self.colorType];
-    [defaults setObject:categorySettings forKey:self.category];
-    [defaults synchronize];
-}
-
-- (void)presentColorPicker:(UITableViewCell*)sender {
-    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-    UIColor* color = [defaults objectForKey:self.category][self.colorType];
-
-    UIColorPickerViewController* colorPicker = [[UIColorPickerViewController alloc] init];
-    colorPicker.popoverPresentationController.sourceView = self;
-    colorPicker.supportsAlpha = NO;
-    colorPicker.delegate = self;
-    colorPicker.selectedColor = color;
-
-    UIViewController* rootViewController = self._viewControllerForAncestor;
-    [rootViewController presentViewController:colorPicker animated:YES completion:nil];
-}
 @end
 
 @implementation SponsorBlockOptionsController
@@ -112,8 +84,8 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
             toggleSwitch.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kRebornSponsorBlockEnabled"];
             cell.accessoryView = toggleSwitch;
         } else if (indexPath.section > 0 && indexPath.section < 9) {
-            SponsorBlockTableCell* tableCell = [tableView dequeueReusableCellWithIdentifier:@"SponsorBlockTableCell2"];
-            tableCell = [[SponsorBlockTableCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:nil];
+            RebornTableCell* tableCell = [tableView dequeueReusableCellWithIdentifier:@"RebornTableCell2"];
+            tableCell = [[RebornTableCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:nil];
             tableCell.textLabel.adjustsFontSizeToFitWidth = true;
             tableCell.accessoryType = UITableViewCellAccessoryNone;
             if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleLight) {
