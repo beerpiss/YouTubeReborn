@@ -50,6 +50,7 @@
     [[NSUserDefaults standardUserDefaults] setObject:self.selectedColor.hexString
                                               forKey:@"kYTRebornColourOptionsV3"];
     [[NSUserDefaults standardUserDefaults] synchronize];
+    CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(), CFSTR("h.ryan.youtubereborn.prefs.color"), NULL, NULL, YES);
 
     UIAlertController* alertSaved = [UIAlertController alertControllerWithTitle:@"Colour Saved"
                                                                         message:nil

@@ -1,4 +1,5 @@
 #import "SponsorBlockOptionsController.h"
+#import "../Extensions/UIColor+HexString.h"
 #ifndef __IPHONE_15_0
 #import "iOS15Fix.h"
 #endif
@@ -14,7 +15,40 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
 @interface SponsorBlockOptionsController ()
 @end
 
+@implementation SponsorBlockTableCell
+// FIXME: I Have Zero Fucking Idea Why My Delegate Function Isn't Working But It's Annoying As Hell
+- (void)colorWellValueChanged:(UITableViewCell*)sender {
+    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+    UIColor* color = self.colorWell.selectedColor;
+    NSLog(@"[YouTube Reborn] [SponsorBlockOptionsController] User selected color %@ for category %@, color type %@",
+          color, self.category, self.colorType);
+
+    NSMutableDictionary* categorySettings = [(NSDictionary*)[defaults objectForKey:self.category] mutableCopy];
+    [categorySettings setObject:color.hexString forKey:self.colorType];
+    [defaults setObject:categorySettings forKey:self.category];
+    [defaults synchronize];
+}
+
+- (void)presentColorPicker:(UITableViewCell*)sender {
+    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+    UIColor* color = [defaults objectForKey:self.category][self.colorType];
+
+    UIColorPickerViewController* colorPicker = [[UIColorPickerViewController alloc] init];
+    colorPicker.popoverPresentationController.sourceView = self;
+    colorPicker.supportsAlpha = NO;
+    colorPicker.delegate = self;
+    colorPicker.selectedColor = color;
+
+    UIViewController* rootViewController = self._viewControllerForAncestor;
+    [rootViewController presentViewController:colorPicker animated:YES completion:nil];
+}
+@end
+
 @implementation SponsorBlockOptionsController
+
+- (id)init {
+    return [super initWithStyle:UITableViewStyleGrouped];
+}
 
 - (void)loadView {
     [super loadView];
@@ -42,13 +76,15 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView*)theTableView {
-    return 8;
+    return 9;
 }
 
 - (NSInteger)tableView:(UITableView*)theTableView numberOfRowsInSection:(NSInteger)section {
-    if (section == 0 || section == 1 || section == 2 || section == 3 || section == 4 || section == 5 || section == 6 ||
-        section == 7) {
+    if (section == 0) {
         return 1;
+    }
+    if (section <= 8) {
+        return 3;
     }
     return 0;
 }
@@ -69,146 +105,91 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
             cell.textLabel.textColor = [UIColor whiteColor];
         }
         if (indexPath.section == 0) {
+            cell.textLabel.text = @"Enable SponsorBlock";
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            UISwitch* toggleSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
+            [toggleSwitch addTarget:self action:@selector(switchToggled:) forControlEvents:UIControlEventValueChanged];
+            toggleSwitch.on = [[NSUserDefaults standardUserDefaults] boolForKey:@"kRebornSponsorBlockEnabled"];
+            cell.accessoryView = toggleSwitch;
+        } else if (indexPath.section > 0 && indexPath.section < 9) {
+            SponsorBlockTableCell* tableCell = [tableView dequeueReusableCellWithIdentifier:@"SponsorBlockTableCell2"];
+            tableCell = [[SponsorBlockTableCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:nil];
+            tableCell.textLabel.adjustsFontSizeToFitWidth = true;
+            tableCell.accessoryType = UITableViewCellAccessoryNone;
+            if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleLight) {
+                tableCell.backgroundColor = [UIColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:1.0];
+                tableCell.textLabel.textColor = [UIColor blackColor];
+            } else {
+                tableCell.backgroundColor = [UIColor colorWithRed:0.110 green:0.110 blue:0.118 alpha:1.0];
+                tableCell.textLabel.textColor = [UIColor whiteColor];
+            }
+            NSArray* titlesNames = @[
+                @"kRebornSponsorBlockSponsor", @"kRebornSponsorBlockSelfPromo", @"kRebornSponsorBlockHighlight",
+                @"kRebornSponsorBlockIntro", @"kRebornSponsorBlockOutro", @"kRebornSponsorBlockPreview",
+                @"kRebornSponsorBlockFiller", @"kRebornSponsorBlockOffTopic"
+            ];
             if (indexPath.row == 0) {
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                NSArray* sponsorItemArray = [NSArray arrayWithObjects:@"Disable", @"Manual Skip", @"Auto Skip", nil];
+                NSArray* sponsorItemArray = @[ @"Disable", @"Auto Skip", @"Manual Skip", @"Show in Seek Bar" ];
+
                 UISegmentedControl* sponsorSegmentedControl =
                     [[UISegmentedControl alloc] initWithItems:sponsorItemArray];
+
+                // make it so "Show in Seek Bar" text won't be cut off on certain devices
+                NSMutableArray* segments = [sponsorSegmentedControl valueForKey:@"_segments"];
+                UISegment* segment = segments[3];
+                UILabel* label = [segment valueForKey:@"_info"];
+                label.adjustsFontSizeToFitWidth = YES;
+
                 sponsorSegmentedControl.frame =
                     CGRectMake(0, 5, self.view.bounds.size.width, cell.bounds.size.height - 10);
-                sponsorSegmentedControl.selectedSegmentIndex = 0;
-                [cell addSubview:sponsorSegmentedControl];
+                sponsorSegmentedControl.selectedSegmentIndex = [[[NSUserDefaults standardUserDefaults]
+                    objectForKey:titlesNames[indexPath.section - 1]][@"status"] intValue];
+                [sponsorSegmentedControl addTarget:self
+                                            action:@selector(categorySegmentSelected:)
+                                  forControlEvents:UIControlEventValueChanged];
+
+                tableCell.selectionStyle = UITableViewCellSelectionStyleNone;
+                [tableCell addSubview:sponsorSegmentedControl];
+            } else if (1 <= indexPath.row && indexPath.row <= 2) {
+                NSArray* titles = @[ @"Seek Bar Color", @"Unsubmitted Color" ];
+                NSArray* colorTypes = @[ @"color", @"unsubmittedColor" ];
+                tableCell.textLabel.text = titles[indexPath.row - 1];
+
+                UIColorWell* colorWell = [[UIColorWell alloc] initWithFrame:CGRectMake(0, 0, 32, 32)];
+                [colorWell addTarget:tableCell
+                              action:@selector(presentColorPicker:)
+                    forControlEvents:UIControlEventTouchUpInside];
+                [colorWell addTarget:tableCell
+                              action:@selector(colorWellValueChanged:)
+                    forControlEvents:UIControlEventValueChanged];
+                colorWell.selectedColor =
+                    [UIColor rebornColorFromHexString:[[NSUserDefaults standardUserDefaults]
+                                                          objectForKey:titlesNames[indexPath.section - 1]]
+                                                          [colorTypes[indexPath.row - 1]]];
+                tableCell.category = titlesNames[indexPath.section - 1];
+                tableCell.colorType = colorTypes[indexPath.row - 1];
+                tableCell.accessoryView = colorWell;
+                tableCell.colorWell = colorWell;
             }
-        }
-        if (indexPath.section == 1) {
-            if (indexPath.row == 0) {
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                NSArray* selfpromoItemArray = [NSArray arrayWithObjects:@"Disable", @"Manual Skip", @"Auto Skip", nil];
-                UISegmentedControl* selfpromoSegmentedControl =
-                    [[UISegmentedControl alloc] initWithItems:selfpromoItemArray];
-                selfpromoSegmentedControl.frame =
-                    CGRectMake(0, 5, self.view.bounds.size.width, cell.bounds.size.height - 10);
-                selfpromoSegmentedControl.selectedSegmentIndex = 0;
-                [cell addSubview:selfpromoSegmentedControl];
-            }
-        }
-        if (indexPath.section == 2) {
-            if (indexPath.row == 0) {
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                NSArray* interactionItemArray =
-                    [NSArray arrayWithObjects:@"Disable", @"Manual Skip", @"Auto Skip", nil];
-                UISegmentedControl* interactionSegmentedControl =
-                    [[UISegmentedControl alloc] initWithItems:interactionItemArray];
-                interactionSegmentedControl.frame =
-                    CGRectMake(0, 5, self.view.bounds.size.width, cell.bounds.size.height - 10);
-                interactionSegmentedControl.selectedSegmentIndex = 0;
-                [cell addSubview:interactionSegmentedControl];
-            }
-        }
-        if (indexPath.section == 3) {
-            if (indexPath.row == 0) {
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                NSArray* introItemArray = [NSArray arrayWithObjects:@"Disable", @"Manual Skip", @"Auto Skip", nil];
-                UISegmentedControl* introSegmentedControl = [[UISegmentedControl alloc] initWithItems:introItemArray];
-                introSegmentedControl.frame =
-                    CGRectMake(0, 5, self.view.bounds.size.width, cell.bounds.size.height - 10);
-                introSegmentedControl.selectedSegmentIndex = 0;
-                [cell addSubview:introSegmentedControl];
-            }
-        }
-        if (indexPath.section == 4) {
-            if (indexPath.row == 0) {
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                NSArray* outroItemArray = [NSArray arrayWithObjects:@"Disable", @"Manual Skip", @"Auto Skip", nil];
-                UISegmentedControl* outroSegmentedControl = [[UISegmentedControl alloc] initWithItems:outroItemArray];
-                outroSegmentedControl.frame =
-                    CGRectMake(0, 5, self.view.bounds.size.width, cell.bounds.size.height - 10);
-                outroSegmentedControl.selectedSegmentIndex = 0;
-                [cell addSubview:outroSegmentedControl];
-            }
-        }
-        if (indexPath.section == 5) {
-            if (indexPath.row == 0) {
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                NSArray* previewItemArray = [NSArray arrayWithObjects:@"Disable", @"Manual Skip", @"Auto Skip", nil];
-                UISegmentedControl* previewSegmentedControl =
-                    [[UISegmentedControl alloc] initWithItems:previewItemArray];
-                previewSegmentedControl.frame =
-                    CGRectMake(0, 5, self.view.bounds.size.width, cell.bounds.size.height - 10);
-                previewSegmentedControl.selectedSegmentIndex = 0;
-                [cell addSubview:previewSegmentedControl];
-            }
-        }
-        if (indexPath.section == 6) {
-            if (indexPath.row == 0) {
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                NSArray* musicofftopicItemArray =
-                    [NSArray arrayWithObjects:@"Disable", @"Manual Skip", @"Auto Skip", nil];
-                UISegmentedControl* musicofftopicSegmentedControl =
-                    [[UISegmentedControl alloc] initWithItems:musicofftopicItemArray];
-                musicofftopicSegmentedControl.frame =
-                    CGRectMake(0, 5, self.view.bounds.size.width, cell.bounds.size.height - 10);
-                musicofftopicSegmentedControl.selectedSegmentIndex = 0;
-                [cell addSubview:musicofftopicSegmentedControl];
-            }
-        }
-        if (indexPath.section == 7) {
-            if (indexPath.row == 0) {
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                NSArray* fillerItemArray = [NSArray arrayWithObjects:@"Disable", @"Manual Skip", @"Auto Skip", nil];
-                UISegmentedControl* fillerSegmentedControl = [[UISegmentedControl alloc] initWithItems:fillerItemArray];
-                fillerSegmentedControl.frame =
-                    CGRectMake(0, 5, self.view.bounds.size.width, cell.bounds.size.height - 10);
-                fillerSegmentedControl.selectedSegmentIndex = 0;
-                [cell addSubview:fillerSegmentedControl];
-            }
+            return tableCell;
         }
     }
     return cell;
 }
 
 - (NSString*)tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section {
-    if (section == 0) {
-        return @"Sponsor";
-    }
-    if (section == 1) {
-        return @"Selfpromo";
-    }
-    if (section == 2) {
-        return @"Interaction";
-    }
-    if (section == 3) {
-        return @"Intro";
-    }
-    if (section == 4) {
-        return @"Outro";
-    }
-    if (section == 5) {
-        return @"Preview";
-    }
-    if (section == 6) {
-        return @"Music_offtopic";
-    }
-    if (section == 7) {
-        return @"Filler";
-    }
-    return nil;
-}
-
-- (void)tableView:(UITableView*)tableView willDisplayHeaderView:(UIView*)view forSection:(NSInteger)section {
-    if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleLight) {
-        view.tintColor = [UIColor colorWithRed:0.949 green:0.949 blue:0.969 alpha:1.0];
-    } else {
-        view.tintColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:1.0];
-    }
-    UITableViewHeaderFooterView* header = (UITableViewHeaderFooterView*)view;
-    [header.textLabel setTextColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"tableSection"]]];
-    [header.textLabel setFont:[UIFont systemFontOfSize:14]];
+    NSArray* titles = @[
+        @"Sponsor", @"Unpaid/self promotion", @"Highlight", @"Intermission/Intro animation", @"Endcards/credits",
+        @"Preview/recap", @"Filler", @"Music: Non-music section"
+    ];
+    if (section >= 1 && section <= 8)
+        return titles[section - 1];
+    else
+        return nil;
 }
 
 - (CGFloat)tableView:(UITableView*)tableView heightForHeaderInSection:(NSInteger)section {
-    if (section == 0 || section == 1 || section == 2 || section == 3 || section == 4 || section == 5 || section == 6 ||
-        section == 7) {
+    if (section <= 8) {
         return 50;
     }
     return 0;
@@ -219,9 +200,10 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
 }
 
 - (CGFloat)tableView:(UITableView*)tableView heightForFooterInSection:(NSInteger)section {
-    if (section == 7) {
+    if (section == 8) {
         return 10;
     }
+    return 0;
 }
 
 @end
@@ -230,6 +212,33 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
 
 - (void)done {
     [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)switchToggled:(UISwitch*)sender {
+    UITableViewCell* cell = (UITableViewCell*)sender.superview;
+    NSIndexPath* indexPath = [self.tableView indexPathForCell:cell];
+    if (indexPath.section == 0)
+        [[NSUserDefaults standardUserDefaults] setBool:[sender isOn] forKey:@"kRebornSponsorBlockEnabled"];
+}
+
+- (void)categorySegmentSelected:(UISegmentedControl*)sender {
+    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+    NSArray* titlesNames = @[
+        @"kRebornSponsorBlockSponsor", @"kRebornSponsorBlockSelfPromo", @"kRebornSponsorBlockHighlight",
+        @"kRebornSponsorBlockIntro", @"kRebornSponsorBlockOutro", @"kRebornSponsorBlockPreview",
+        @"kRebornSponsorBlockFiller", @"kRebornSponsorBlockOffTopic"
+    ];
+
+    NSInteger idx = sender.selectedSegmentIndex;
+    UITableViewCell* cell = (UITableViewCell*)sender.superview.superview;
+    NSIndexPath* indexPath = [self.tableView indexPathForCell:cell];
+    if (indexPath.section >= 1) {
+        NSMutableDictionary* categorySettings =
+            [(NSDictionary*)[defaults objectForKey:titlesNames[indexPath.section - 1]] mutableCopy];
+        [categorySettings setObject:[NSNumber numberWithInteger:idx] forKey:@"status"];
+        [defaults setObject:categorySettings forKey:titlesNames[indexPath.section - 1]];
+        [defaults synchronize];
+    }
 }
 
 @end

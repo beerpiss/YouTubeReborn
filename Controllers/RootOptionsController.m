@@ -77,7 +77,7 @@ static int __isOSVersionAtLeast(int major, int minor, int patch) {
         return 1 + canOpenInFiles + canOpenInFilza;
     }
     if (section == 2) {
-        return 7;
+        return 8;
     }
     if (section == 3) {
         return 9;
