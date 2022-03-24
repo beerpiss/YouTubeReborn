@@ -1,7 +1,6 @@
 #import <Foundation/Foundation.h>
 #import <HBLog.h>
 #import <UIKit/UIKit.h>
-#import "../Extensions/NSString+HexColor.h"
 #import "../Extensions/UIColor+HexString.h"
 #import "Colours.h"
 #import "Settings.h"
@@ -354,7 +353,7 @@ UIColor* rebornCustomColor;
                 NSLog(@"[YouTube Reborn] Found legacy color preference kYTRebornColourOptionsVTwo: %@",
                       legacyHexString);
                 UIColor* color = [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
-                [defaults setObject:[NSString hexStringFromColor:color] forKey:@"kYTRebornColourOptionsV3"];
+                [defaults setObject:color.hexString forKey:@"kYTRebornColourOptionsV3"];
                 NSLog(@"[YouTube Reborn] Converted legacy color to kYTRebornColourOptionsV3: %@",
                       [defaults objectForKey:@"kYTRebornColourOptionsV3"]);
                 [defaults removeObjectForKey:@"kYTRebornColourOptionsVTwo"];

@@ -1,5 +1,4 @@
 #import "ColourOptionsController.h"
-#import "../Extensions/NSString+HexColor.h"
 #import "../Extensions/UIColor+HexString.h"
 
 @interface ColourOptionsController ()
@@ -48,7 +47,7 @@
 }
 
 - (void)save {
-    [[NSUserDefaults standardUserDefaults] setObject:[NSString hexStringFromColor:self.selectedColor]
+    [[NSUserDefaults standardUserDefaults] setObject:self.selectedColor.hexString
                                               forKey:@"kYTRebornColourOptionsV3"];
     [[NSUserDefaults standardUserDefaults] synchronize];
 
