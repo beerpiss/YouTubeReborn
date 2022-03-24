@@ -3,6 +3,10 @@
 
 @interface UIColor (HexString)
 /*!
+ * The #RRGGBBAA hex string representation of the color.
+ */
+@property (strong, nonatomic) NSString* hexString;
+/*!
  * @brief Converts a hex string into a UIColor.
  *
  * @param hexString string format: #RGB, #RGBA, #RRGGBB, #RRGGBBAA
