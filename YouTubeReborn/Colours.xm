@@ -320,6 +320,14 @@ UIColor* rebornCustomColor;
 %end
 %end
 
+static void colorPrefsChanged(CFNotificationCenterRef center,
+                              void* observer,
+                              CFStringRef name,
+                              const void* object,
+                              CFDictionaryRef userInfo) {
+    rebornCustomColor = [UIColor rebornColorFromHexString:[[NSUserDefaults standardUserDefaults] stringForKey:@"kYTRebornColourOptionsV3"]];
+}
+
 %ctor {
     @autoreleasepool {
         NSString* defaultColor;
@@ -363,6 +371,9 @@ UIColor* rebornCustomColor;
 
         if ([[defaults stringForKey:@"kYTRebornColourOptionsV3"] length]) {
             rebornCustomColor = [UIColor rebornColorFromHexString:[defaults stringForKey:@"kYTRebornColourOptionsV3"]];
+            CFNotificationCenterAddObserver(
+                CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)colorPrefsChanged,
+                CFSTR("h.ryan.youtubereborn.prefs.color"), NULL, CFNotificationSuspensionBehaviorCoalesce);
             NSLog(@"[YouTube Reborn] Applying color %@", rebornCustomColor);
             %init(gColourOptions);
         }
