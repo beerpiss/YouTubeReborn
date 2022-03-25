@@ -31,7 +31,7 @@ jobs:
         name: Build (release)
         run: |
           gmake clean 2>&1 | grep -Ev --line-buffered 'getcwd|descriptor'
-          gmake package FINALPACKAGE=1 2>&1 | grep -Ev --line-buffered 'getcwd|descriptor'
+          gmake package FINALPACKAGE=1 REBORN_API_KEY=${{ secrets.REBORN_API_KEY }} 2>&1 | grep -Ev --line-buffered 'getcwd|descriptor'
           mv packages/* out/
       - 
         name: Build (debug)
@@ -41,7 +41,7 @@ jobs:
           mkdir -p .theos/packages
           echo $(( $GITHUB_RUN_NUMBER - 1 )) > .theos/packages/$PKGNAME-$PKGVER+git$GIT_DATE.$GIT_COMMIT_HASH
           
-          gmake package FINALPACKAGE=0 DEBUG=1 2>&1 | grep -Ev --line-buffered 'getcwd|descriptor'
+          gmake package FINALPACKAGE=0 DEBUG=1 REBORN_API_KEY=${{ secrets.REBORN_API_KEY }} 2>&1 | grep -Ev --line-buffered 'getcwd|descriptor'
           mv packages/* out/
       -
         name: Upload artifacts (release)

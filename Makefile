@@ -1,8 +1,9 @@
-TARGET := iphone:clang:14.5:14.0
+TARGET := iphone:clang:15.2.1:14.0
 INSTALL_TARGET_PROCESSES = YouTube
 GO_EASY_ON_ME = 1
 
 MODULES ?=
+REBORN_API_KEY ?=  # YouTube Data v3 API key
 TWEAK_NAME = YouTubeReborn
 $(TWEAK_NAME)_FILES = $(wildcard ./**/*.xm) $(wildcard ./**/*.m)
 $(TWEAK_NAME)_CFLAGS = -fobjc-arc
@@ -60,16 +61,27 @@ before-all::
 	@if [ -f "Controllers/RootOptionsController.m.bak" ]; then \
 		mv Controllers/RootOptionsController.m.bak Controllers/RootOptionsController.m; \
 	fi; \
-	sed -i.bak -e 's|@YOUTUBE_REBORN_VERSION@|$(_THEOS_INTERNAL_PACKAGE_VERSION)|g' Controllers/RootOptionsController.m;
+	if [ -f "YouTubeReborn/VideoOverlay.xm.bak" ]; then \
+		mv YouTubeReborn/VideoOverlay.xm.bak YouTubeReborn/VideoOverlay.xm; \
+	fi; \
+	sed -i.bak -e 's|@YOUTUBE_REBORN_VERSION@|$(_THEOS_INTERNAL_PACKAGE_VERSION)|g' Controllers/RootOptionsController.m; \
+	sed -i.bak -e 's|@REBORN_API_KEY@|$(REBORN_API_KEY)|g' YouTubeReborn/VideoOverlay.xm;
 
 after-all::
 	@if [ -f "Controllers/RootOptionsController.m.bak" ]; then \
 		mv Controllers/RootOptionsController.m.bak Controllers/RootOptionsController.m; \
-	fi
+	fi; \
+	if [ -f "YouTubeReborn/VideoOverlay.xm.bak" ]; then \
+		mv YouTubeReborn/VideoOverlay.xm.bak YouTubeReborn/VideoOverlay.xm; \
+	fi; \
 
 before-clean::
 	@if [ -f "Controllers/RootOptionsController.m.bak" ]; then \
 		mv Controllers/RootOptionsController.m.bak Controllers/RootOptionsController.m; \
-	fi
+	fi; \
+	if [ -f "YouTubeReborn/VideoOverlay.xm.bak" ]; then \
+		mv YouTubeReborn/VideoOverlay.xm.bak YouTubeReborn/VideoOverlay.xm; \
+	fi; \
+
 include $(THEOS_MAKE_PATH)/tweak.mk
 include $(THEOS_MAKE_PATH)/aggregate.mk
