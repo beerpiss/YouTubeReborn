@@ -8,7 +8,7 @@
 #import "../Controllers/PictureInPictureController.h"
 #import "VideoOverlay.h"
 
-static NSString* const YTApiKey = @"AIzaSyCGZHGUPP9wojQDfrwPEr7Pr-mhBanHAb8";
+static NSString* const YTApiKey = @"@REBORN_API_KEY@";
 
 YTLocalPlaybackController* playingVideoID;
 
